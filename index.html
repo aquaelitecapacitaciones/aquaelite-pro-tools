@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AquaCheck AC-PCI-001 v1.1</title>
+<title>AquaCheck AC-PCI-001 v1.4</title>
 <style>
 :root{
   --navy:#173866;--cyan:#51bfd2;--ink:#17202a;--muted:#667085;--line:#d9e2ec;
@@ -44,6 +44,17 @@ button{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:poin
 .statusline{padding:10px 12px;border-radius:8px;background:#f7fafc;border:1px solid #e5edf4;margin-top:10px;font-size:13px}
 @media(max-width:700px){.grid,.grid3{grid-template-columns:1fr}.checkgrid{grid-template-columns:1fr}.full{grid-column:auto}}
 @media print{body{background:#fff}.wrap{max-width:none;margin:0}.card{box-shadow:none;break-inside:avoid}.actions{display:none}}
+
+.trace{border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;min-height:40px;background:#f8fafc;font-weight:600;line-height:1.35}
+.signature-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px}
+.signature-field{border-bottom:1px solid #334155;min-height:52px;display:flex;align-items:flex-end;padding-bottom:6px}
+.signature-field span{font-size:13px;color:#475569}
+.signature-line{margin:70px auto 10px;max-width:380px;text-align:center}
+.signature-line div{border-top:1px solid #334155;margin-bottom:8px}
+.signature-line strong{font-size:13px}
+@media(max-width:700px){.signature-grid{grid-template-columns:1fr}}
+@media print{#firmaSupervisor{break-inside:avoid}.signature-line{margin-top:80px}}
+
 </style>
 </head>
 <body>
@@ -54,7 +65,7 @@ button{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:poin
     <div class="tag">Soluciones Integrales en Agua</div>
     <h2>AquaCheck AC-PCI-001</h2>
     <div>Prueba hidráulica de gabinetes y verificación del punto más desfavorable</div>
-    <div class="meta">Digital v1.3 · Revisión técnica: NFPA 14 + NFPA 20 + material Aquaelite</div>
+    <div class="meta">Digital v1.4 · Revisión técnica: NFPA 14 + NFPA 20 + material Aquaelite</div>
   </div>
 
   <div class="card">
@@ -182,6 +193,31 @@ button{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:poin
       <button class="secondary" onclick="location.reload()">Nueva evaluación</button>
     </div>
     <div id="resultado" class="result"></div>
+  </div>
+
+  <div class="card" id="trazabilidad">
+    <h3>6. Trazabilidad de la evaluación</h3>
+    <div class="grid">
+      <div><label>Tipo de gabinete / clase</label><div class="trace" id="trClase">—</div></div>
+      <div><label>Conexión ensayada</label><div class="trace" id="trConexion">—</div></div>
+      <div><label>Punto evaluado</label><div class="trace">Gabinete contra incendio más alejado N.° 1</div></div>
+      <div><label>Presión residual medida</label><div class="trace" id="trPresion">—</div></div>
+      <div><label>Criterio de comparación</label><div class="trace" id="trCriterio">—</div></div>
+      <div><label>Resultado</label><div class="trace" id="trResultado">Pendiente de evaluación</div></div>
+    </div>
+  </div>
+
+  <div class="card" id="firmaSupervisor">
+    <h3>7. Conformidad del supervisor / profesional responsable</h3>
+    <p class="small">Espacio para identificación y suscripción del profesional responsable de la supervisión de la prueba.</p>
+    <div class="signature-grid">
+      <div class="signature-field"><span>Nombre del profesional</span></div>
+      <div class="signature-field"><span>Colegiatura / CIP N.°</span></div>
+    </div>
+    <div class="signature-line">
+      <div></div>
+      <strong>Firma del profesional / supervisor</strong>
+    </div>
   </div>
 
   <div class="card ref">
@@ -316,7 +352,7 @@ function evaluar(){
   let box=document.getElementById('resultado'), estado, cls;
   if(fallas.length){estado="NO CUMPLE";cls="bad"}
   else if(revisar.length){estado="REVISAR";cls="warn"}
-  else{estado="CUMPLE";cls="ok"}
+  else{estado="CUMPLE CON LOS CRITERIOS EVALUADOS";cls="ok"}
 
   box.className="result "+cls;
   box.innerHTML=`<strong>${estado}</strong>
@@ -324,7 +360,30 @@ function evaluar(){
     ${revisar.length?`<p><b>Verificaciones pendientes</b><br>${revisar.map(x=>"• "+x).join("<br>")}</p>`:""}
     ${ok.length?`<p><b>Criterios satisfechos</b><br>${ok.map(x=>"• "+x).join("<br>")}</p>`:""}
     ${diagnostico.length?`<p><b>Diagnóstico orientativo Aquaelite</b><br>${diagnostico.map(x=>"• "+x).join("<br>")}</p>`:""}
-    <p class="small">Resultado generado contra criterios configurados en AquaCheck Digital v1.3. Confirmar siempre edición normativa adoptada, cálculo hidráulico aprobado y exigencias de la AHJ.</p>`;
+    <p class="small">Resultado generado contra criterios configurados en AquaCheck Digital v1.4. Confirmar siempre edición normativa adoptada, cálculo hidráulico aprobado y exigencias de la AHJ.</p>`;
+
+  // Completar trazabilidad para pantalla e impresión/PDF
+  const claseEl=document.getElementById('clase');
+  const conEl=document.getElementById('conexion');
+  document.getElementById('trClase').textContent =
+    claseEl && claseEl.value ? claseEl.options[claseEl.selectedIndex].text : 'No indicado';
+  document.getElementById('trConexion').textContent =
+    conEl && conEl.value ? conEl.options[conEl.selectedIndex].text : 'No indicado';
+  document.getElementById('trPresion').textContent =
+    g1pr!==null ? `${g1pr} psi` : 'No indicado';
+
+  let criterioTexto='Según criterio configurado / cálculo hidráulico aprobado';
+  if(con==='2.5') criterioTexto='≥ 100 psi (criterio configurado en AquaCheck)';
+  else if(con==='1.5') criterioTexto='≥ 65 psi (criterio configurado en AquaCheck)';
+  document.getElementById('trCriterio').textContent=criterioTexto;
+
+  document.getElementById('trResultado').textContent =
+    estado==='CUMPLE CON LOS CRITERIOS EVALUADOS'
+      ? estado
+      : estado==='NO CUMPLE'
+        ? 'NO CUMPLE / REQUIERE REVISIÓN'
+        : 'REVISAR';
+
   box.scrollIntoView({behavior:"smooth"});
 }
 </script>
