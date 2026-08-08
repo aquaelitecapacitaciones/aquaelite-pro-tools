@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AquaCheck AC-PCI-001 v1.4</title>
+<title>AquaCheck AC-PCI-001 v1.5</title>
 <style>
 :root{
   --navy:#173866;--cyan:#51bfd2;--ink:#17202a;--muted:#667085;--line:#d9e2ec;
@@ -65,7 +65,7 @@ button{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:poin
     <div class="tag">Soluciones Integrales en Agua</div>
     <h2>AquaCheck AC-PCI-001</h2>
     <div>Prueba hidráulica de gabinetes y verificación del punto más desfavorable</div>
-    <div class="meta">Digital v1.4 · Revisión técnica: NFPA 14 + NFPA 20 + material Aquaelite</div>
+    <div class="meta">Digital v1.5 · Revisión técnica: NFPA 14 + NFPA 20 + material Aquaelite</div>
   </div>
 
   <div class="card">
@@ -252,101 +252,92 @@ function evaluar(){
   if(!clase) revisar.push("Seleccionar el tipo de gabinete: Clase I, Clase II o Clase III.");
   if(!v('edicion')) revisar.push("Registrar, si está disponible, la edición normativa adoptada por la AHJ (Autoridad Competente).");
 
-  // Coherencia entre clase de gabinete y conexión ensayada
   if(clase==="I" && con==="1.5") revisar.push("Clase I se identifica por conexión de 2½ in; verificar la clasificación seleccionada.");
   if(clase==="II" && con==="2.5") revisar.push("Clase II corresponde a estación de manguera de 1½ in o menor; verificar la clasificación seleccionada.");
-  // Clase III puede contener ambas conexiones.
 
-  // Operación / seguridad
   if(v('cal')==="no") fallas.push("Instrumentación declarada sin calibración.");
   if(v('reset')==="no") fallas.push("El sistema no fue restituido a condición normal/automática.");
   if(v('jockey')==="no") fallas.push("La bomba jockey no actuó conforme al set point aprobado.");
   if(v('bomba')==="no") fallas.push("La bomba principal no actuó conforme al set point aprobado.");
   if(v('panel')==="no") fallas.push("La señal/supervisión requerida no operó.");
 
-  // Evaluación de gabinetes
-  if(con==="2.5"){
-    if(g1remoto!=="si") revisar.push("Confirmar que el Gabinete más alejado N.° 1 sea realmente el punto hidráulicamente más desfavorable.");
-    if(g1pr===null) revisar.push("Falta presión residual del Gabinete más alejado N.° 1.");
-    else if(g1pr<100) fallas.push(`Gabinete más alejado N.° 1: presión residual ${g1pr} psi < 100 psi.`);
-    else ok.push(`Gabinete más alejado N.° 1: presión residual ${g1pr} psi ≥ 100 psi.`);
+  let pmin=null, qref=null;
+  if(con==="2.5"){ pmin=100; qref=250; }
+  if(con==="1.5"){ pmin=65; qref=100; }
 
-    if(g2remoto==="si"){
-      if(g2pr===null) revisar.push("Falta presión residual del Gabinete más alejado N.° 2.");
-      else if(g2pr<100) fallas.push(`Gabinete más alejado N.° 2: presión residual ${g2pr} psi < 100 psi.`);
-      else ok.push(`Gabinete más alejado N.° 2: presión residual ${g2pr} psi ≥ 100 psi.`);
-    } else if(g2remoto!=="na"){
-      revisar.push("Confirmar si el segundo gabinete remoto es requerido por el cálculo hidráulico.");
+  function evaluarGabinete(num, remoto, presion, qmed, q){
+    const nombre=`Gabinete contra incendio más alejado N.° ${num}`;
+    const tieneDato = presion!==null || remoto==="si" || qmed==="si";
+    if(!tieneDato) return;
+
+    if(remoto==="no"){
+      revisar.push(`${nombre}: verificar si corresponde realmente a uno de los puntos hidráulicamente más desfavorables del sistema.`);
     }
 
-    // Caudal directo en gabinete: solo si fue medido
-    if(g1qmed==="si"){
-      if(g1q===null) revisar.push("Se indicó medición directa de caudal en Gabinete N.° 1, pero no se registró valor.");
-      else if(g1q<250) fallas.push(`Gabinete N.° 1: caudal directo ${g1q} gpm < 250 gpm.`);
-      else ok.push(`Gabinete N.° 1: caudal directo ${g1q} gpm ≥ 250 gpm.`);
-    }
-    if(g2qmed==="si"){
-      if(g2q===null) revisar.push("Se indicó medición directa de caudal en Gabinete N.° 2, pero no se registró valor.");
-      else if(g2q<250) fallas.push(`Gabinete N.° 2: caudal directo ${g2q} gpm < 250 gpm.`);
-      else ok.push(`Gabinete N.° 2: caudal directo ${g2q} gpm ≥ 250 gpm.`);
-    }
-
-    // Fuente hidráulica / cuarto de bombas
-    if(qtotal===null) revisar.push("Si se desea validar también la capacidad de la fuente, registrar el caudal total medido en cuarto de bombas / sistema de prueba.");
-    else{
-      if(qdem!==null){
-        if(qtotal<qdem) fallas.push(`Fuente hidráulica: caudal medido ${qtotal} gpm < demanda aprobada ${qdem} gpm.`);
-        else ok.push(`Fuente hidráulica: caudal medido ${qtotal} gpm ≥ demanda aprobada ${qdem} gpm.`);
+    if(presion===null){
+      revisar.push(`${nombre}: falta registrar presión residual durante flujo.`);
+    } else if(pmin!==null){
+      if(presion < pmin){
+        fallas.push(`${nombre}: presión residual ${presion} psi < ${pmin} psi.`);
+        diagnostico.push(`${nombre}: la prueba de presión falló. Antes de emitir conformidad, revisar el cálculo hidráulico aprobado y verificar diámetros reales de tubería, elevación, longitudes y pérdidas de carga, coeficiente C/condición de la tubería, accesorios, válvulas parcialmente cerradas, dispositivos reguladores de presión y posibles obstrucciones.`);
       } else {
-        if(qtotal<500) {
-          fallas.push(`Fuente hidráulica: caudal medido ${qtotal} gpm < 500 gpm de referencia configurada.`);
-          revisar.push("Al estar el caudal fuera del parámetro de referencia, validar el cálculo hidráulico aprobado antes de emitir conformidad.");
-        } else ok.push(`Fuente hidráulica: caudal medido ${qtotal} gpm ≥ 500 gpm de referencia configurada.`);
+        ok.push(`${nombre}: presión residual ${presion} psi ≥ ${pmin} psi.`);
+      }
+    }
+
+    if(qmed==="si"){
+      if(q===null){
+        revisar.push(`${nombre}: se indicó medición directa de caudal, pero no se registró el valor.`);
+      } else if(qref!==null){
+        if(q < qref){
+          fallas.push(`${nombre}: caudal directo ${q} gpm < ${qref} gpm.`);
+          diagnostico.push(`${nombre}: caudal directo bajo. Revisar correspondencia con el cálculo hidráulico, diámetro efectivo, pérdidas de carga y condición de válvulas/accesorios.`);
+        } else {
+          ok.push(`${nombre}: caudal directo ${q} gpm ≥ ${qref} gpm.`);
+        }
       }
     }
   }
-  else if(con==="1.5"){
-    if(g1remoto!=="si") revisar.push("Confirmar el punto hidráulicamente más desfavorable de Clase II.");
-    if(g1pr===null) revisar.push("Falta presión residual del Gabinete más alejado N.° 1.");
-    else if(g1pr<65) fallas.push(`Gabinete más alejado N.° 1: presión residual ${g1pr} psi < 65 psi.`);
-    else ok.push(`Gabinete más alejado N.° 1: presión residual ${g1pr} psi ≥ 65 psi.`);
 
-    if(g1qmed==="si" && g1q!==null){
-      if(g1q<100) fallas.push(`Caudal directo en gabinete: ${g1q} gpm < 100 gpm.`);
-      else ok.push(`Caudal directo en gabinete: ${g1q} gpm ≥ 100 gpm.`);
-    }
+  evaluarGabinete(1, g1remoto, g1pr, g1qmed, g1q);
+  evaluarGabinete(2, g2remoto, g2pr, g2qmed, g2q);
 
-    if(qtotal!==null){
-      if(qdem!==null){
-        if(qtotal<qdem) fallas.push(`Fuente hidráulica: ${qtotal} gpm < demanda aprobada ${qdem} gpm.`);
-        else ok.push(`Fuente hidráulica: ${qtotal} gpm ≥ demanda aprobada ${qdem} gpm.`);
+  if(qtotal!==null){
+    if(qdem!==null){
+      if(qtotal < qdem){
+        fallas.push(`Fuente hidráulica: caudal medido ${qtotal} gpm < demanda hidráulica aprobada ${qdem} gpm.`);
+        diagnostico.push("La fuente hidráulica no alcanza la demanda aprobada. Revisar desempeño de la bomba, presión de succión, condiciones de la fuente de agua, curva de bomba y método de medición.");
       } else {
-        if(qtotal<100) {
-          fallas.push(`Fuente hidráulica: ${qtotal} gpm < 100 gpm de referencia configurada.`);
-          revisar.push("Al estar el caudal fuera del parámetro de referencia, validar el cálculo hidráulico aprobado antes de emitir conformidad.");
-        } else ok.push(`Fuente hidráulica: ${qtotal} gpm ≥ 100 gpm de referencia configurada.`);
+        ok.push(`Fuente hidráulica: caudal medido ${qtotal} gpm ≥ demanda aprobada ${qdem} gpm.`);
       }
+    } else if(con==="2.5"){
+      if(qtotal < 500) fallas.push(`Fuente hidráulica: caudal medido ${qtotal} gpm < 500 gpm de referencia configurada.`);
+      else ok.push(`Fuente hidráulica: caudal medido ${qtotal} gpm ≥ 500 gpm de referencia configurada.`);
+    } else if(con==="1.5"){
+      if(qtotal < 100) fallas.push(`Fuente hidráulica: caudal medido ${qtotal} gpm < 100 gpm de referencia configurada.`);
+      else ok.push(`Fuente hidráulica: caudal medido ${qtotal} gpm ≥ 100 gpm de referencia configurada.`);
     }
   }
-  else {
-    revisar.push("La combinación seleccionada requiere validar el criterio específico del cálculo hidráulico aprobado antes de emitir conformidad automática.");
+
+  const g1Fail = g1pr!==null && pmin!==null && g1pr<pmin;
+  const g2Fail = g2pr!==null && pmin!==null && g2pr<pmin;
+  const g1Pass = g1pr!==null && pmin!==null && g1pr>=pmin;
+  const sourceOk = qtotal!==null && (
+    (qdem!==null && qtotal>=qdem) ||
+    (qdem===null && ((con==="2.5" && qtotal>=500) || (con==="1.5" && qtotal>=100)))
+  );
+
+  if(g1Pass && g2Fail && sourceOk){
+    diagnostico.push("La fuente hidráulica y el Gabinete N.° 1 satisfacen los parámetros evaluados, pero el Gabinete N.° 2 no. Priorizar la revisión del tramo hidráulico que alimenta al Gabinete N.° 2: diámetro instalado versus plano, elevación, longitud equivalente, pérdidas por accesorios, válvulas parcialmente cerradas, PRV/PRD, obstrucciones o diferencias respecto al cálculo hidráulico aprobado.");
   }
 
-  // Validación hidráulica posterior: solo se exige cuando el resultado de presión/flujo está fuera de rango.
-  const pressureOrFlowFail = fallas.some(x => x.includes("presión residual") || x.includes("caudal"));
-  if(pressureOrFlowFail && !v('plano')){
-    revisar.push("Resultado fuera de rango: validar el cálculo hidráulico aprobado antes de emitir conformidad definitiva.");
+  if((g1Fail || g2Fail) && sourceOk){
+    diagnostico.push("La fuente hidráulica dispone del caudal evaluado, pero existe al menos un punto remoto fuera del rango de presión. Revisar la distribución hidráulica aguas abajo antes de atribuir la falla a la bomba.");
   }
 
-  // Diagnóstico cruzado
-  const remoteFail = fallas.some(x => x.includes("Gabinete más alejado"));
-  const sourceFail = fallas.some(x => x.includes("Fuente hidráulica"));
-  const sourceOk = ok.some(x => x.includes("Fuente hidráulica"));
-  if(remoteFail && sourceOk){
-    diagnostico.push("La fuente hidráulica cumple, pero existe deficiencia en el punto remoto. Revisar pérdidas de carga, válvulas parcialmente cerradas, PRV, obstrucciones, diámetro efectivo, configuración del sistema o correspondencia con el cálculo hidráulico.");
-  }
-  if(!remoteFail && sourceFail){
-    diagnostico.push("Las presiones remotas registradas no evidencian falla, pero la fuente hidráulica no alcanza la demanda configurada. Revisar desempeño de bomba, succión, prueba de flujo y consistencia del cálculo.");
+  const hydraulicFail = fallas.some(x => x.toLowerCase().includes("presión residual") || x.toLowerCase().includes("caudal"));
+  if(hydraulicFail){
+    revisar.push("Al existir un resultado fuera de rango, validar el cálculo hidráulico aprobado antes de emitir conformidad definitiva.");
   }
 
   let box=document.getElementById('resultado'), estado, cls;
@@ -357,25 +348,25 @@ function evaluar(){
   box.className="result "+cls;
   box.innerHTML=`<strong>${estado}</strong>
     ${fallas.length?`<p><b>Hallazgos críticos</b><br>${fallas.map(x=>"• "+x).join("<br>")}</p>`:""}
-    ${revisar.length?`<p><b>Verificaciones pendientes</b><br>${revisar.map(x=>"• "+x).join("<br>")}</p>`:""}
+    ${revisar.length?`<p><b>Verificaciones / acciones pendientes</b><br>${revisar.map(x=>"• "+x).join("<br>")}</p>`:""}
     ${ok.length?`<p><b>Criterios satisfechos</b><br>${ok.map(x=>"• "+x).join("<br>")}</p>`:""}
     ${diagnostico.length?`<p><b>Diagnóstico orientativo Aquaelite</b><br>${diagnostico.map(x=>"• "+x).join("<br>")}</p>`:""}
-    <p class="small">Resultado generado contra criterios configurados en AquaCheck Digital v1.4. Confirmar siempre edición normativa adoptada, cálculo hidráulico aprobado y exigencias de la AHJ.</p>`;
+    <p class="small">Resultado generado contra criterios configurados en AquaCheck Digital v1.5. Confirmar siempre edición normativa adoptada, cálculo hidráulico aprobado y exigencias de la AHJ.</p>`;
 
-  // Completar trazabilidad para pantalla e impresión/PDF
   const claseEl=document.getElementById('clase');
   const conEl=document.getElementById('conexion');
   document.getElementById('trClase').textContent =
     claseEl && claseEl.value ? claseEl.options[claseEl.selectedIndex].text : 'No indicado';
   document.getElementById('trConexion').textContent =
     conEl && conEl.value ? conEl.options[conEl.selectedIndex].text : 'No indicado';
-  document.getElementById('trPresion').textContent =
-    g1pr!==null ? `${g1pr} psi` : 'No indicado';
 
-  let criterioTexto='Según criterio configurado / cálculo hidráulico aprobado';
-  if(con==='2.5') criterioTexto='≥ 100 psi (criterio configurado en AquaCheck)';
-  else if(con==='1.5') criterioTexto='≥ 65 psi (criterio configurado en AquaCheck)';
-  document.getElementById('trCriterio').textContent=criterioTexto;
+  let presiones=[];
+  if(g1pr!==null) presiones.push(`Gab. N.°1: ${g1pr} psi`);
+  if(g2pr!==null) presiones.push(`Gab. N.°2: ${g2pr} psi`);
+  document.getElementById('trPresion').textContent = presiones.length ? presiones.join(" | ") : 'No indicado';
+
+  document.getElementById('trCriterio').textContent =
+    pmin!==null ? `≥ ${pmin} psi (criterio configurado según conexión ensayada)` : 'Según criterio configurado / cálculo aprobado';
 
   document.getElementById('trResultado').textContent =
     estado==='CUMPLE CON LOS CRITERIOS EVALUADOS'
