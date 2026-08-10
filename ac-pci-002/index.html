@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AquaCheck AC-PCI-002 Digital v2.4</title>
+<style>
+:root{--navy:#102b4e;--blue:#184f83;--gold:#c99a32;--bg:#eef3f8;--card:#fff;--text:#182334;--muted:#64748b;--ok:#0b7a53;--warn:#9a6700;--bad:#b42318}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(120deg,var(--navy),var(--blue));color:#fff;padding:26px 18px}
+.wrap{max-width:1120px;margin:auto}.brand{font-weight:800;font-size:27px}.sub{opacity:.9;margin-top:4px}
+main{padding:18px}.card{background:var(--card);border-radius:14px;padding:20px;margin:0 auto 16px;max-width:1120px;box-shadow:0 3px 15px #0f172a12}
+h2{color:var(--navy);margin:0 0 14px}h3{color:var(--blue)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+label{font-weight:700;font-size:13px;display:block;margin-bottom:5px}input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff}
+.note{background:#f7f2e7;border-left:4px solid var(--gold);padding:12px;border-radius:7px;font-size:13px;line-height:1.45}
+.small{font-size:12px;color:var(--muted);line-height:1.45}.tablewrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}th{background:var(--navy);color:#fff;padding:9px;font-size:12px}td{border:1px solid #dbe3ec;padding:7px;text-align:center}td input{min-width:90px}
+button{border:0;border-radius:9px;padding:12px 17px;font-weight:800;cursor:pointer;margin:4px}
+.primary{background:var(--navy);color:#fff}.secondary{background:#e7edf5;color:var(--navy)}
+.result{padding:16px;border-radius:10px;margin-top:14px;line-height:1.5}.ok{background:#e9f8f1;border:1px solid #8fd5b8}.warn{background:#fff7df;border:1px solid #e8c76a}.bad{background:#fff0ee;border:1px solid #efa29b}
+canvas{width:100%;height:420px;border:1px solid #d8e1eb;border-radius:10px;background:#fff}
+.trace{border:1px solid #cbd5e1;border-radius:8px;padding:10px;background:#f8fafc;min-height:40px;font-weight:600}
+.signature-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:30px}.signature-field{border-bottom:1px solid #334155;min-height:50px;display:flex;align-items:flex-end;padding-bottom:6px}.signature-line{margin:75px auto 5px;max-width:380px;text-align:center}.signature-line div{border-top:1px solid #334155;margin-bottom:8px}
+details{margin-top:12px}summary{cursor:pointer;font-weight:800;color:var(--navy)}
+@media(max-width:720px){.grid,.signature-grid{grid-template-columns:1fr}header{padding:20px 14px}main{padding:10px}}
+@media print{body{background:#fff}.no-print{display:none!important}.card{box-shadow:none;border:1px solid #dbe3ec;break-inside:avoid}header{print-color-adjust:exact;-webkit-print-color-adjust:exact}canvas{height:330px}.signature-line{margin-top:80px}}
+
+.annex-rec{margin-top:12px;padding:12px;border-radius:8px;background:#f8fafc;border:1px solid #dbe3ec;font-size:13px;line-height:1.45}
+.photo-controls{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 16px}
+.photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.photo-card{border:1px solid #dbe3ec;border-radius:10px;padding:10px;background:#fff;break-inside:avoid}
+.photo-frame{width:100%;aspect-ratio:4/3;border:1px dashed #94a3b8;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#64748b;font-size:12px}
+.photo-frame img{width:100%;height:100%;object-fit:contain;background:#fff}
+.photo-card textarea{margin-top:8px;min-height:54px;resize:vertical}
+.photo-title{font-size:12px;font-weight:700;color:#173866;margin-bottom:6px}
+.photo-remove{margin-top:8px;background:#f1f5f9;color:#334155}
+@media(max-width:720px){.photo-grid{grid-template-columns:1fr}}
+@media print{
+  .photo-grid{display:block}
+  .photo-card{width:48%;display:inline-block;vertical-align:top;margin:0 1% 12mm 0;page-break-inside:avoid}
+  .photo-card:nth-of-type(4n+1){page-break-before:auto}
+  .photo-card:nth-of-type(4n){page-break-after:always}
+  .photo-card textarea{border:0;border-bottom:1px solid #64748b;border-radius:0;min-height:45px}
+  .photo-remove,.photo-input{display:none!important}
+  #anexoWrap.hidden-annex{display:none!important}
+}
+
+
+.result-summary{width:100%;max-width:720px;margin:16px auto;border-collapse:collapse;min-width:0}
+.result-summary th,.result-summary td{border:1px solid #94a3b8;padding:10px 12px;text-align:center}
+.result-summary th{background:#eef3f8;color:#102b4e;font-size:12px}
+.result-summary td:first-child{text-align:left;font-weight:700}
+.result-badge{font-weight:900;font-size:16px}
+.norm-note{font-size:11px;color:#64748b;line-height:1.45;margin-top:8px}
+
+
+/* v2.4: disposición final de reporte */
+.control-inline{margin-top:18px;padding-top:14px;border-top:1px solid #dbe3ec}
+@media print{
+  #evidenciaSection{page-break-before:always;break-before:page;break-inside:auto}
+  #evidenciaSection .photo-grid{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8mm 8mm !important;
+  }
+  #evidenciaSection .photo-card{
+    width:auto !important;
+    display:block !important;
+    margin:0 !important;
+    padding:6px !important;
+    break-inside:avoid !important;
+    page-break-inside:avoid !important;
+  }
+  #evidenciaSection .photo-frame{
+    aspect-ratio:auto !important;
+    height:48mm !important;
+  }
+  #evidenciaSection .photo-card textarea{
+    min-height:12mm !important;
+    max-height:12mm !important;
+    font-size:10px !important;
+  }
+  #evidenciaSection .photo-card:nth-of-type(4n){page-break-after:auto !important}
+  #evidenciaSection + section{page-break-before:auto !important;break-before:auto !important}
+  .control-inline{margin-top:10px;padding-top:8px}
+}
+
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">AQUAELITE® | AquaCheck</div><div class="sub">AC-PCI-002 · Evaluación de curva de desempeño de bomba contra incendio · Digital v2.4</div></div></header>
+<main>
+<section class="card">
+<h2>1. Identificación y referencia</h2>
+<div class="grid">
+<div><label>Proyecto / ubicación</label><input id="proyecto"></div>
+<div><label>Fecha de prueba</label><input id="fecha" type="date"></div>
+<div><label>Fabricante / modelo</label><input id="modelo"></div>
+<div><label>Accionamiento</label><select id="accion"><option>Motor eléctrico</option><option>Motor diésel</option></select></div>
+<div><label>Control de velocidad</label><select id="control"><option value="constante">Velocidad constante</option><option value="variable">Velocidad variable</option></select></div>
+<div><label>Edición NFPA / AHJ aplicable</label><input id="edicion" placeholder="Ej.: NFPA 25 edición adoptada por AHJ"></div>
+<div><label>Referencia disponible para la evaluación</label><select id="referencia" onchange="actualizarReferencia()">
+<option value="">Seleccionar</option>
+<option value="placa">Solo datos de placa — sin curva de referencia</option>
+<option value="fabricante">Curva certificada del fabricante</option>
+<option value="historica">Curva histórica / original de aceptación o prueba de campo anterior</option>
+</select></div>
+<div><label id="lblCurva">¿Cuenta con presiones de referencia por caudal?</label><select id="curva"><option value="si">Sí</option><option value="no">No</option></select></div>
+</div>
+<div class="note" style="margin-top:14px"><b>AHJ:</b> Authority Having Jurisdiction (Autoridad Competente). Para evaluar el desempeño conforme a NFPA 25, AquaCheck debe comparar la presión neta obtenida en la prueba con una <b>referencia válida</b> (curva original/certificada del fabricante, curva original de aceptación o prueba de campo anterior válida, según la edición adoptada). Si solo existen datos de placa y no existe una curva de referencia, AquaCheck puede reconstruir y graficar la curva de campo, pero <b>no declarará conformidad de desempeño NFPA 25</b> ni utilizará el 65 % como sustituto de esa referencia.</div>
+</section>
+
+<section class="card">
+<h2>2. Datos de referencia de la bomba</h2>
+<div id="refInfo" class="note" style="margin-bottom:14px">
+Seleccione primero en el Punto 1 la referencia disponible. AquaCheck adaptará este bloque según si trabaja con <b>solo placa</b>, <b>curva certificada del fabricante</b> o <b>curva histórica/original de aceptación</b>.
+</div>
+<div class="grid">
+<div><label id="lblQr">Caudal nominal Qr (gpm) — dato de placa / referencia seleccionada</label><input id="qr" type="number" min="0"></div>
+<div><label id="lblPr">Presión nominal Pr (psi) — dato de placa / referencia seleccionada</label><input id="pr" type="number" min="0"></div>
+<div><label id="lblNr">Velocidad nominal Nr (rpm) — dato de placa / referencia seleccionada</label><input id="nr" type="number" min="0"></div>
+<div><label>Instrumentación calibrada</label><select id="cal"><option value="">Seleccionar</option><option value="si">Sí</option><option value="no">No</option></select></div>
+</div>
+</section>
+
+<section class="card">
+<h2>3. Datos de la prueba en campo</h2>
+<p class="small">Registre como mínimo <b>3 puntos reales de caudal medidos en campo</b>. No es obligatorio que coincidan exactamente con 25 %, 50 %, 100 % o 150 % del caudal nominal. AquaCheck recalcula automáticamente el porcentaje real de cada punto como Q/Qr × 100. Puede agregar puntos adicionales si desea construir una curva más representativa.</p><div class="note"><b>Criterio de captura:</b> mínimo 3 puntos válidos con caudal, presión de succión, presión de descarga y RPM. Ejemplo: si en campo obtiene 0 %, 81 % y 161 %, la herramienta construye la curva con esos valores reales. Los puntos adicionales son opcionales.</div>
+<div class="tablewrap"><table>
+<thead><tr><th>Punto</th><th>Caudal Q<br>(gpm)</th><th>% real de Qr</th><th>P. succión<br>(psi)</th><th>P. descarga<br>(psi)</th><th>RPM campo</th><th>P. neta campo<br>(psi)</th><th>Q normalizado<br>(gpm)</th><th>P. neta normalizada<br>(psi)</th><th>P. referencia<br>(psi, si existe)</th><th class="no-print">Acción</th></tr></thead><tbody id="rows"></tbody></table></div><div class="no-print" style="margin-top:10px"><button class="secondary" onclick="agregarPunto()">+ Agregar punto adicional</button></div>
+<p class="small">AquaCheck trabaja con los puntos realmente obtenidos en campo. La herramienta no fuerza porcentajes artificiales cuando el caudal medido corresponde, por ejemplo, a 81 % o 161 % del caudal nominal. La revisión profesional debe confirmar que el rango ensayado es suficiente para la edición NFPA 25 adoptada y para las condiciones disponibles de succión.</p>
+</section>
+
+<section class="card">
+<h2>4. Evaluación y curva</h2>
+<div class="no-print">
+<button class="primary" onclick="evaluar()">Evaluar curva</button>
+<button class="secondary" onclick="window.print()">Imprimir / Guardar PDF</button>
+<button class="secondary" onclick="limpiar()">Limpiar</button>
+</div>
+<div id="resultado" class="result warn"><strong>PENDIENTE DE EVALUACIÓN</strong><br>Complete los datos y seleccione “Evaluar curva”.</div>
+<h3>Curva Caudal – Presión neta</h3>
+<canvas id="grafico" width="1000" height="420"></canvas>
+<div id="check150" class="result warn" style="margin-top:12px">
+<strong>RESULTADOS DE LA CURVA DE CAMPO</strong>
+<table class="result-summary">
+  <thead><tr><th>CRITERIO</th><th>CAUDAL (GPM)</th><th>PRESIÓN (PSI)</th><th>RESULTADO</th></tr></thead>
+  <tbody>
+    <tr><td>CAUDAL NOMINAL (100 % Qr)</td><td id="sumQ100">—</td><td id="sumP100">—</td><td>Dato calculado</td></tr>
+    <tr><td>150 % DEL CAUDAL NOMINAL</td><td id="sumQ150">—</td><td id="sumP150">—</td><td>Dato calculado</td></tr>
+    <tr><td>65 % DE LA PRESIÓN NOMINAL DE PLACA</td><td>—</td><td id="sumP65placa">—</td><td id="sumEstadoFinal" class="result-badge">Pendiente</td></tr>
+  </tbody>
+</table>
+<div id="sumComentario" class="norm-note">
+Se calculará automáticamente a partir de los puntos medidos en campo y la información de placa/referencia seleccionada.
+</div>
+<hr style="border:0;border-top:1px solid #d8e1eb;margin:14px 0">
+<strong>CONCLUSIÓN DE LA EVALUACIÓN</strong>
+<div id="nfpa25Conclusion" class="norm-note" style="font-size:12px;margin-top:7px">
+Pendiente de evaluación.
+</div>
+</div>
+<hr style="border:0;border-top:1px solid #d8e1eb;margin:14px 0">
+<strong>CONCLUSIÓN DE LA EVALUACIÓN</strong>
+<div id="nfpa25Conclusion" class="norm-note" style="font-size:12px;margin-top:7px">
+Pendiente de evaluación.
+</div>
+</div>
+<hr style="border:0;border-top:1px solid #d8e1eb;margin:14px 0">
+<strong>CONCLUSIÓN NFPA 25</strong>
+<div id="nfpa25Conclusion" class="norm-note" style="font-size:12px;margin-top:7px">
+Pendiente de evaluación.
+</div>
+</div>
+</div>
+</div>
+<p class="small">Gráfico orientativo: curva de campo normalizada y puntos de referencia ingresados. La comparación válida depende de la calidad y procedencia de la curva de referencia.</p>
+</section>
+
+<section class="card" id="annexSection">
+<h2>5. Recomendación técnica y Anexo AC-PCI-002-A</h2>
+<div id="anexoRecomendacion" class="annex-rec">
+<strong>Lectura recomendada:</strong> el Anexo AC-PCI-002-A resume posibles causas de problemas de bombas contra incendio y acciones de investigación basadas en el enfoque informativo del Anexo C de NFPA 25. 
+Cuando AquaCheck detecte una desviación, el anexo se desplegará automáticamente para orientar la inspección y el mantenimiento.
+</div>
+<div id="anexoWrap" class="hidden-annex" style="display:none">
+  <div class="note" style="margin-top:12px"><b>Se detectaron desviaciones.</b> Revise el siguiente anexo como guía de investigación. No constituye por sí solo un diagnóstico mecánico ni una orden de reemplazo.</div>
+  <div class="tablewrap" style="margin-top:12px"><table>
+  <thead><tr><th>Condición observada</th><th>Posible causa a investigar</th><th>Acción orientativa</th></tr></thead>
+  <tbody>
+  <tr><td>Pierde succión / no mantiene presión</td><td>Ingreso de aire por fugas en succión</td><td>Localizar y reparar fugas en tubería y conexiones de succión.</td></tr>
+  <tr><td>Caudal o presión reducidos</td><td>Conexión o toma de succión obstruida</td><td>Examinar toma, rejilla/pantalla y tubería; retirar obstrucciones.</td></tr>
+  <tr><td>Entrega y presión reducidas</td><td>Bolsa de aire en tubería de succión</td><td>Revisar trazado y eliminar puntos de acumulación de aire.</td></tr>
+  <tr><td>Problemas de prensaestopa</td><td>Empaquetadura ajustada, gastada, defectuosa o incorrecta</td><td>Inspeccionar, ajustar o reemplazar conforme al fabricante.</td></tr>
+  <tr><td>Problemas de sello</td><td>Paso o suministro de agua al sello obstruido</td><td>Limpiar conductos y revisar componentes del sello.</td></tr>
+  <tr><td>Curva inferior a referencia</td><td>Condición de prueba, RPM, succión o condición hidráulico-mecánica</td><td>Confirmar instrumentos/RPM; inspeccionar y mantener antes de decidir reemplazo.</td></tr>
+  <tr><td>Ruido / vibración / anomalía</td><td>Condición hidráulica o mecánica no determinada</td><td>Realizar diagnóstico especializado; no inferir una causa única desde la curva.</td></tr>
+  </tbody></table></div>
+</div>
+</section>
+
+
+
+
+
+
+
+
+
+<section class="card">
+<h2>7. Trazabilidad de la evaluación</h2>
+<div class="grid">
+<div><label>Referencia utilizada</label><div id="trRef" class="trace">—</div></div>
+<div><label>RPM nominal</label><div id="trRpm" class="trace">—</div></div>
+
+<div><label>Resultado</label><div id="trRes" class="trace">Pendiente</div></div>
+</div>
+</section>
+
+<section class="card" id="evidenciaSection">
+<h2>8. Registro fotográfico de la prueba</h2>
+<p class="small">Inserte fotografías de la prueba, instrumentos, bomba, tablero, flujómetro/test header, condiciones de succión/descarga o hallazgos relevantes. La hoja se organiza en bloques de hasta 4 fotografías por página al imprimir o guardar en PDF. Puede agregar tantas fotografías como requiera.</p>
+<div class="photo-controls no-print">
+  <button class="secondary" onclick="agregarFoto()">+ Agregar fotografía</button>
+  <button class="secondary" onclick="agregarCuatroFotos()">+ Agregar 4 espacios</button>
+</div>
+<div id="photoGrid" class="photo-grid"></div>
+</section>
+
+<section class="card">
+<h2>9. Conformidad y control técnico</h2>
+<div class="signature-grid">
+<div>
+  <label>Nombre del profesional / supervisor</label>
+  <input id="nombreProfesional" type="text" placeholder="Ingrese nombre y apellidos">
+</div>
+<div>
+  <label>Colegiatura / CIP N.°</label>
+  <input id="cipProfesional" type="text" placeholder="Ingrese número de colegiatura / CIP">
+</div>
+</div>
+<div class="signature-line"><div></div><b>Firma del profesional / supervisor</b></div>
+<div class="control-inline"><h3>Control técnico y criterio de uso</h3>
+<p class="small">AquaCheck identifica desviaciones de desempeño y orienta la investigación técnica. Un resultado fuera de la curva no determina por sí solo el descarte o reemplazo de la bomba. Deben verificarse condiciones de ensayo, instrumentación, velocidad, suministro de agua y condición hidráulico-mecánica; ejecutar inspección/mantenimiento o correcciones cuando correspondan y repetir la prueba. La decisión final debe considerar la demanda hidráulica, documentación del fabricante, edición normativa adoptada y requisitos de la AHJ.</p>
+</div></section>
+</main>
+
+<script>
+let puntoCount=0;
+function rowHTML(i, obligatorio=false){
+  return `<tr data-row="${i}"><td>${obligatorio ? `Punto obligatorio ${i+1}` : `Punto adicional ${i+1}`}</td><td><input id="q${i}" type="number" min="0" step="0.1" oninput="recalcularFila(${i})"></td><td id="pct${i}">-</td><td><input id="ps${i}" type="number" step="0.1" oninput="recalcularFila(${i})"></td><td><input id="pd${i}" type="number" step="0.1" oninput="recalcularFila(${i})"></td><td><input id="rpm${i}" type="number" min="0" step="1" oninput="recalcularFila(${i})"></td><td id="pn${i}">-</td><td id="qn${i}">-</td><td id="pnn${i}">-</td><td><input id="pref${i}" type="number" min="0" step="0.1"></td><td class="no-print">${obligatorio ? 'Obligatorio' : `<button class="secondary" onclick="eliminarPunto(${i})">Eliminar</button>`}</td></tr>`;
+}
+function crearFilasIniciales(){const tb=document.getElementById('rows');for(let i=0;i<3;i++){tb.insertAdjacentHTML('beforeend',rowHTML(i,true));puntoCount++;}}
+function agregarPunto(){document.getElementById('rows').insertAdjacentHTML('beforeend',rowHTML(puntoCount,false));puntoCount++;}
+function eliminarPunto(i){const row=document.querySelector(`tr[data-row="${i}"]`);if(row)row.remove();}
+function recalcularFila(i){const qr=num('qr'),nr=num('nr'),q=num('q'+i),ps=num('ps'+i),pd=num('pd'+i),rpm=num('rpm'+i);const pct=document.getElementById('pct'+i);if(pct)pct.textContent=(qr&&q!==null)?((q/qr)*100).toFixed(1)+' %':'-';if(ps!==null&&pd!==null){const pn=pd-ps;document.getElementById('pn'+i).textContent=pn.toFixed(1);if(nr&&rpm){const ratio=nr/rpm;document.getElementById('qn'+i).textContent=(q!==null?(q*ratio).toFixed(1):'-');document.getElementById('pnn'+i).textContent=(pn*ratio*ratio).toFixed(1);}else{document.getElementById('qn'+i).textContent='-';document.getElementById('pnn'+i).textContent='-';}}}
+crearFilasIniciales();
+
+function num(id){let x=parseFloat(document.getElementById(id).value);return Number.isFinite(x)?x:null}
+function val(id){return document.getElementById(id).value}
+function limpiar(){location.reload()}
+function draw(fieldPts,refPts,demand,guides=null){
+ const c=document.getElementById("grafico"),ctx=c.getContext("2d"),W=c.width,H=c.height;
+ ctx.clearRect(0,0,W,H);ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);
+ const all=[...fieldPts,...refPts]; if(demand) all.push(demand);
+ if(!all.length){ctx.fillStyle="#64748b";ctx.font="18px Arial";ctx.fillText("Sin datos suficientes para graficar.",40,60);return}
+ let maxQ=Math.max(...all.map(p=>p.q),1)*1.12,maxP=Math.max(...all.map(p=>p.p),1)*1.18;
+ const L=75,R=25,T=25,B=55,gw=W-L-R,gh=H-T-B;
+ const X=q=>L+q/maxQ*gw,Y=p=>T+gh-p/maxP*gh;
+ ctx.strokeStyle="#cbd5e1";ctx.lineWidth=1;
+ for(let k=0;k<=5;k++){let y=T+gh*k/5;ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(W-R,y);ctx.stroke();ctx.fillStyle="#475569";ctx.font="12px Arial";ctx.fillText((maxP*(1-k/5)).toFixed(0),25,y+4)}
+ for(let k=0;k<=5;k++){let x=L+gw*k/5;ctx.beginPath();ctx.moveTo(x,T);ctx.lineTo(x,T+gh);ctx.stroke();ctx.fillStyle="#475569";ctx.fillText((maxQ*k/5).toFixed(0),x-10,H-25)}
+ ctx.strokeStyle="#334155";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,T+gh);ctx.lineTo(W-R,T+gh);ctx.stroke();
+ function series(pts,dash,width){
+  pts.sort((a,b)=>a.q-b.q);ctx.setLineDash(dash);ctx.lineWidth=width;ctx.strokeStyle="#173866";ctx.beginPath();
+  pts.forEach((p,i)=>i?ctx.lineTo(X(p.q),Y(p.p)):ctx.moveTo(X(p.q),Y(p.p)));ctx.stroke();ctx.setLineDash([]);
+  pts.forEach(p=>{ctx.fillStyle="#173866";ctx.beginPath();ctx.arc(X(p.q),Y(p.p),4,0,Math.PI*2);ctx.fill()})
+ }
+ if(refPts.length) series(refPts,[8,5],2);
+ if(fieldPts.length){ctx.strokeStyle="#111827";fieldPts.sort((a,b)=>a.q-b.q);ctx.beginPath();ctx.lineWidth=3;fieldPts.forEach((p,i)=>i?ctx.lineTo(X(p.q),Y(p.p)):ctx.moveTo(X(p.q),Y(p.p)));ctx.stroke();fieldPts.forEach(p=>{ctx.fillStyle="#111827";ctx.beginPath();ctx.arc(X(p.q),Y(p.p),5,0,Math.PI*2);ctx.fill()})}
+ if(demand){ctx.fillStyle="#9a6700";ctx.beginPath();ctx.arc(X(demand.q),Y(demand.p),7,0,Math.PI*2);ctx.fill();ctx.fillText(" Demanda",X(demand.q)+7,Y(demand.p)-7)}
+
+
+ if(guides && guides.r100 && guides.r150){
+   const q100=guides.qr, q150=1.5*guides.qr;
+   const p100=guides.r100.p, p150=guides.r150.p;
+   ctx.save();ctx.setLineDash([6,5]);ctx.lineWidth=1.5;
+   // Q nominal
+   ctx.strokeStyle="#64748b";ctx.beginPath();ctx.moveTo(X(q100),T);ctx.lineTo(X(q100),T+gh);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(L,Y(p100));ctx.lineTo(X(q100),Y(p100));ctx.stroke();
+   ctx.fillStyle="#64748b";ctx.beginPath();ctx.arc(X(q100),Y(p100),5,0,Math.PI*2);ctx.fill();
+   // 150%
+   ctx.strokeStyle="#b42318";ctx.beginPath();ctx.moveTo(X(q150),T);ctx.lineTo(X(q150),T+gh);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(L,Y(p150));ctx.lineTo(X(q150),Y(p150));ctx.stroke();
+   ctx.fillStyle="#b42318";ctx.beginPath();ctx.arc(X(q150),Y(p150),6,0,Math.PI*2);ctx.fill();
+   ctx.setLineDash([]);ctx.font="12px Arial";ctx.fillStyle="#182334";
+   ctx.fillText(`Qr: ${q100.toFixed(0)} gpm / ${p100.toFixed(1)} psi`,Math.min(X(q100)+7,W-210),Math.max(Y(p100)-8,T+18));
+   ctx.fillText(`150% Qr: ${q150.toFixed(0)} gpm / ${p150.toFixed(1)} psi`,Math.min(X(q150)+7,W-235),Math.max(Y(p150)-8,T+34));
+   if(guides.p95ref){
+      ctx.save();ctx.setLineDash([4,4]);ctx.strokeStyle="#0b7a53";
+      ctx.beginPath();ctx.moveTo(L,Y(guides.p95ref));ctx.lineTo(X(q100),Y(guides.p95ref));ctx.stroke();
+      ctx.setLineDash([]);ctx.fillStyle="#0b7a53";
+      ctx.fillText(`95% Pr = ${guides.p95ref.toFixed(1)} psi`,L+8,Math.max(Y(guides.p95ref)-6,T+15));
+      ctx.restore();
+   }
+   ctx.restore();
+ }
+
+ ctx.fillStyle="#182334";ctx.font="13px Arial";ctx.fillText("Caudal (gpm)",W/2-35,H-6);ctx.save();ctx.translate(15,H/2+40);ctx.rotate(-Math.PI/2);ctx.fillText("Presión neta (psi)",0,0);ctx.restore();
+ ctx.fillText("Campo normalizado",L+10,T+15);ctx.setLineDash([8,5]);ctx.beginPath();ctx.moveTo(L+145,T+11);ctx.lineTo(L+205,T+11);ctx.stroke();ctx.setLineDash([]);ctx.fillText("Referencia",L+215,T+15);
+}
+
+
+function actualizarReferencia(){
+  const ref=document.getElementById("referencia").value;
+  const info=document.getElementById("refInfo");
+  const curva=document.getElementById("curva");
+  const lblCurva=document.getElementById("lblCurva");
+  const lblQr=document.getElementById("lblQr");
+  const lblPr=document.getElementById("lblPr");
+  const lblNr=document.getElementById("lblNr");
+
+  if(ref==="placa"){
+    info.innerHTML="<b>Fuente seleccionada: PLACA.</b> Ingrese Qr, Pr y Nr directamente de la placa. AquaCheck usará el <b>caudal nominal y la presión nominal de placa</b> como referencia en el punto nominal para verificar si la presión neta de campo alcanza al menos el 95 % de ese valor. Si además existe curva original/certificada o histórica, podrá realizarse una comparación más completa por varios puntos.";
+    lblQr.textContent="Caudal nominal Qr (gpm) — PLACA";
+    lblPr.textContent="Presión nominal Pr (psi) — PLACA";
+    lblNr.textContent="Velocidad nominal Nr (rpm) — PLACA";
+    lblCurva.textContent="Presiones de referencia por caudal";
+    curva.value="no";
+    curva.disabled=true;
+  }else if(ref==="fabricante"){
+    info.innerHTML="<b>Fuente seleccionada: CURVA CERTIFICADA DEL FABRICANTE.</b> Ingrese los datos nominales de la bomba y complete las presiones de referencia por cada caudal usando la curva del fabricante.";
+    lblQr.textContent="Caudal nominal Qr (gpm) — curva/placa del fabricante";
+    lblPr.textContent="Presión nominal Pr (psi) — curva/placa del fabricante";
+    lblNr.textContent="Velocidad nominal Nr (rpm) — referencia del fabricante";
+    lblCurva.textContent="¿Cuenta con presiones de referencia por caudal de la curva del fabricante?";
+    curva.disabled=false;
+    curva.value="si";
+  }else if(ref==="historica"){
+    info.innerHTML="<b>Fuente seleccionada: CURVA HISTÓRICA / PRUEBA ANTERIOR.</b> Ingrese los datos nominales de referencia y complete las presiones históricas por cada caudal para comparar la curva actual con el desempeño anterior.";
+    lblQr.textContent="Caudal nominal Qr (gpm) — referencia histórica/placa";
+    lblPr.textContent="Presión nominal Pr (psi) — referencia histórica/placa";
+    lblNr.textContent="Velocidad nominal Nr (rpm) — referencia histórica";
+    lblCurva.textContent="¿Cuenta con presiones históricas de referencia por caudal?";
+    curva.disabled=false;
+    curva.value="si";
+  }else{
+    info.innerHTML="Seleccione primero en el Punto 1 la referencia disponible. AquaCheck adaptará este bloque según si trabaja con <b>solo placa</b>, <b>curva certificada del fabricante</b> o <b>curva histórica/original de aceptación</b>.";
+    lblQr.textContent="Caudal nominal Qr (gpm) — dato de placa / referencia seleccionada";
+    lblPr.textContent="Presión nominal Pr (psi) — dato de placa / referencia seleccionada";
+    lblNr.textContent="Velocidad nominal Nr (rpm) — dato de placa / referencia seleccionada";
+    lblCurva.textContent="¿Cuenta con presiones de referencia por caudal?";
+    curva.disabled=false;
+  }
+}
+
+function solve3(A,b){
+  // Gaussian elimination for 3x3
+  const M=A.map((r,i)=>[...r,b[i]]);
+  for(let i=0;i<3;i++){
+    let piv=i;
+    for(let j=i+1;j<3;j++) if(Math.abs(M[j][i])>Math.abs(M[piv][i])) piv=j;
+    if(Math.abs(M[piv][i])<1e-12) return null;
+    [M[i],M[piv]]=[M[piv],M[i]];
+    const d=M[i][i];
+    for(let k=i;k<4;k++) M[i][k]/=d;
+    for(let j=0;j<3;j++){
+      if(j===i) continue;
+      const f=M[j][i];
+      for(let k=i;k<4;k++) M[j][k]-=f*M[i][k];
+    }
+  }
+  return [M[0][3],M[1][3],M[2][3]];
+}
+function quadraticFit(pts){
+  if(pts.length<3) return null;
+  let S0=pts.length,S1=0,S2=0,S3=0,S4=0,T0=0,T1=0,T2=0;
+  pts.forEach(({q,p})=>{
+    const q2=q*q;
+    S1+=q; S2+=q2; S3+=q2*q; S4+=q2*q2;
+    T0+=p; T1+=q*p; T2+=q2*p;
+  });
+  const sol=solve3([[S0,S1,S2],[S1,S2,S3],[S2,S3,S4]],[T0,T1,T2]);
+  if(!sol) return null;
+  return {a:sol[0],b:sol[1],c:sol[2], p:(q)=>sol[0]+sol[1]*q+sol[2]*q*q};
+}
+
+
+let fotoCount=0;
+
+function renumerarFotos(){
+  [...document.querySelectorAll("#photoGrid .photo-card")].forEach((card,pos)=>{
+    const title=card.querySelector(".photo-title");
+    const img=card.querySelector("img");
+    if(title) title.textContent=`Fotografía ${pos+1}`;
+    if(img) img.alt=`Fotografía ${pos+1}`;
+  });
+}
+
+function agregarFoto(){
+  const idx=fotoCount++;
+  const card=document.createElement("div");
+  card.className="photo-card";
+  card.id=`fotoCard${idx}`;
+  card.innerHTML=`
+    <div class="photo-title">Fotografía ${idx+1}</div>
+    <div class="photo-frame" id="fotoFrame${idx}">Sin fotografía</div>
+    <input class="photo-input" type="file" accept="image/*" onchange="cargarFoto(${idx},this)">
+    <textarea id="fotoComentario${idx}" maxlength="240" placeholder="Comentario / hallazgo (aprox. 2 líneas)"></textarea>
+    <button class="photo-remove no-print" onclick="eliminarFoto(${idx})">Eliminar</button>`;
+  document.getElementById("photoGrid").appendChild(card);
+  renumerarFotos();
+}
+function agregarCuatroFotos(){for(let i=0;i<4;i++) agregarFoto();}
+function eliminarFoto(idx){
+  const e=document.getElementById(`fotoCard${idx}`);
+  if(e) e.remove();
+  renumerarFotos();
+}
+function cargarFoto(idx,input){
+  const file=input.files && input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const frame=document.getElementById(`fotoFrame${idx}`);
+    frame.innerHTML=`<img src="${e.target.result}" alt="Fotografía ${idx+1}">`;
+  };
+  reader.readAsDataURL(file);
+}
+// Iniciar con cuatro espacios para una hoja fotográfica.
+agregarCuatroFotos();
+
+
+
+
+
+
+function ordenarPuntos(pts){ return [...pts].sort((a,b)=>a.q-b.q); }
+function valorEnCurva(pts, qObjetivo){
+  const p=ordenarPuntos(pts);
+  if(p.length<2) return null;
+  for(let i=0;i<p.length-1;i++){
+    if(qObjetivo>=p[i].q && qObjetivo<=p[i+1].q){
+      const f=(qObjetivo-p[i].q)/(p[i+1].q-p[i].q);
+      return {p:p[i].p+f*(p[i+1].p-p[i].p), modo:"INTERPOLACIÓN", a:p[i], b:p[i+1]};
+    }
+  }
+  // Extrapolate using nearest end segment, but label it clearly.
+  if(qObjetivo<p[0].q){
+    const a=p[0],b=p[1],f=(qObjetivo-a.q)/(b.q-a.q);
+    return {p:a.p+f*(b.p-a.p), modo:"EXTRAPOLACIÓN", a,b};
+  }
+  const a=p[p.length-2],b=p[p.length-1],f=(qObjetivo-a.q)/(b.q-a.q);
+  return {p:a.p+f*(b.p-a.p), modo:"EXTRAPOLACIÓN", a,b};
+}
+
+function evaluar(){
+ let fail=[],warn=[],ok=[],diag=[],field=[],refs=[];
+ const qr=num("qr"),pr=num("pr"),nr=num("nr");
+ const control=val("control"),ref=val("referencia"),cal=val("cal");
+ if(!qr||!pr||!nr) warn.push("Complete caudal, presión y RPM nominales de la bomba.");
+ if(!ref) warn.push("Seleccione la referencia disponible: placa, curva del fabricante o curva histórica/original.");
+
+ if(cal==="no") fail.push("La instrumentación fue declarada sin calibración; no emitir conformidad con estos datos.");
+ if(!val("edicion")) warn.push("Registrar la edición NFPA adoptada por la AHJ.");
+ if(control==="variable") warn.push("Bomba con control de velocidad variable: la secuencia y criterios específicos deben validarse contra la edición NFPA adoptada antes de emitir una conclusión automática.");
+
+ let compared=0,below95=0, rpmIssues=0;
+ const rowIds=[...document.querySelectorAll('#rows tr')].map(r=>parseInt(r.dataset.row));
+ let validPoints=0;
+ for(const i of rowIds){
+   let q=num('q'+i),ps=num('ps'+i),pd=num('pd'+i),rpm=num('rpm'+i),pref=num('pref'+i);
+   const any=[q,ps,pd,rpm,pref].some(x=>x!==null);
+   if(!any) continue;
+   if(q===null||ps===null||pd===null||rpm===null){warn.push(`Punto ${i+1}: para que el punto sea válido debe registrar caudal, presión de succión, presión de descarga y RPM.`);continue;}
+   validPoints++;
+   let pct=qr?(q/qr)*100:null;
+   document.getElementById('pct'+i).textContent=pct!==null?pct.toFixed(1)+' %':'-';
+   let pn=pd-ps;document.getElementById('pn'+i).textContent=pn.toFixed(1);
+   let ratio=nr/rpm,qn=q*ratio,pnn=pn*ratio*ratio;document.getElementById('qn'+i).textContent=qn.toFixed(1);document.getElementById('pnn'+i).textContent=pnn.toFixed(1);
+   if(Math.abs(rpm-nr)/nr>0.02) rpmIssues++;
+   field.push({q:qn,p:pnn,pct:pct});
+   if(pref!==null){refs.push({q:qn,p:pref});compared++;let ratioP=pnn/pref;if(ratioP<0.95){below95++;fail.push(`Punto ${i+1} (${pct!==null?pct.toFixed(1)+' % de Qr':'% no calculado'}): presión neta normalizada ${pnn.toFixed(1)} psi es ${(ratioP*100).toFixed(1)} % de la referencia ingresada (${pref} psi).`);}else{ok.push(`Punto ${i+1} (${pct!==null?pct.toFixed(1)+' % de Qr':'% no calculado'}): presión neta normalizada >= 95 % de la referencia ingresada.`);}}
+ }
+ if(validPoints<3){
+   warn.push(`Faltan datos de campo: se registraron ${validPoints} punto(s) válido(s). Para construir la curva se requieren como mínimo 3 puntos completos con caudal, presión de succión, presión de descarga y RPM.`);
+ }else{
+   ok.push(`Se registraron ${validPoints} puntos válidos de campo y la curva puede construirse.`);
+ }
+ if(ref==="placa"){
+   if(validPoints>=3){
+     ok.push("Modo placa: la curva de campo fue construida con los puntos medidos y se evaluará el punto nominal contra el 95 % de la presión nominal de placa.");
+   }else{
+     warn.push("Modo placa seleccionado. Complete al menos 3 puntos de campo para construir la curva.");
+   }
+ }else if(val("curva")==="no"){
+   warn.push("No se dispone de presiones de referencia por caudal para la referencia seleccionada; no puede completarse la evaluación de desempeño conforme a NFPA 25.");
+ }
+ if(rpmIssues) warn.push(`Se detectaron ${rpmIssues} punto(s) con diferencia de RPM mayor al 2 % respecto de la nominal. AquaCheck normalizó Q y presión mediante relaciones de afinidad; verificar accionamiento y medición de velocidad.`);
+ if(compared===0 && ref!=="placa") {
+   warn.push("Sin presiones de referencia válidas por punto no se puede concluir conformidad de desempeño conforme a NFPA 25.");
+ }
+
+
+
+ if(below95>0){
+   diag.push("Existe desviación respecto de la curva de referencia. Este resultado NO determina por sí solo el descarte o reemplazo de la bomba.");
+   diag.push("Investigar condiciones de prueba e instrumentación, RPM, suministro y succión, posición de válvulas, restricciones/obstrucciones y condición hidráulico-mecánica. Ejecutar inspección, mantenimiento o corrección según hallazgos y repetir la prueba.");
+   
+ }
+
+
+
+
+
+ const refValida = ref==="fabricante" || ref==="historica";
+
+
+ // Cálculo de la curva en los puntos clave.
+ let r100=null,r150=null,p95ref=null,p65placa=null;
+ let cumpleNFPA25Nominal=null, cumpleNFPA20_150=null;
+ if(validPoints>=3 && qr && pr){
+   r100=valorEnCurva(field, qr);
+   r150=valorEnCurva(field, 1.5*qr);
+   p95ref=0.95*pr;
+   p65placa=0.65*pr;
+
+   document.getElementById("sumQ100").textContent=qr.toFixed(1);
+   document.getElementById("sumP100").textContent=r100 ? r100.p.toFixed(1) : "—";
+document.getElementById("sumQ150").textContent=(1.5*qr).toFixed(1);
+   document.getElementById("sumP150").textContent=r150 ? r150.p.toFixed(1) : "—";
+   document.getElementById("sumP65placa").textContent=p65placa.toFixed(1);
+   const estadoFinal=document.getElementById("sumEstadoFinal");
+   if(!r150){
+      estadoFinal.textContent = "PENDIENTE";
+      estadoFinal.style.color = "#9a6700";
+   }
+
+   if(r100){
+      cumpleNFPA25Nominal = r100.p >= p95ref;
+   }
+   if(r150){
+      cumpleNFPA20_150 = r150.p >= p65placa;
+      const estadoFinal=document.getElementById("sumEstadoFinal");
+      estadoFinal.textContent = cumpleNFPA20_150 ? "CONFORME" : "NO CONFORME";
+      estadoFinal.style.color = cumpleNFPA20_150 ? "#184f83" : "#b42318";
+   }
+
+   let detalle=`La curva se construyó con ${validPoints} puntos válidos de campo normalizados por RPM. `;
+   if(r100){
+      detalle+=`Para el caudal nominal Qr = ${qr.toFixed(1)} gpm, AquaCheck obtuvo una presión neta de ${r100.p.toFixed(1)} psi mediante ${r100.modo.toLowerCase()}. `;
+      detalle+=`El 95 % de la presión nominal de placa Pr = ${pr.toFixed(1)} psi es ${p95ref.toFixed(1)} psi. `;
+      detalle+=cumpleNFPA25Nominal
+        ? `Como ${r100.p.toFixed(1)} psi ≥ ${p95ref.toFixed(1)} psi, el punto nominal resulta CONFORME con el criterio configurado de NFPA 25. `
+        : `Como ${r100.p.toFixed(1)} psi < ${p95ref.toFixed(1)} psi, el punto nominal NO resulta conforme y requiere investigación. `;
+   }
+   if(r150){
+      detalle+=`Como referencia suplementaria de NFPA 20, para 150 % Qr = ${(1.5*qr).toFixed(1)} gpm se obtiene ${r150.p.toFixed(1)} psi, y el 65 % de Pr corresponde a ${p65placa.toFixed(1)} psi. `;
+   }
+   document.getElementById("sumComentario").textContent=detalle;
+ }
+
+ // Conclusión NFPA 25.
+ const nfpaBox=document.getElementById("nfpa25Conclusion");
+ if(ref==="placa" && r100){
+   if(cumpleNFPA25Nominal){
+      nfpaBox.innerHTML=`<b>CONFORME — CRITERIO NFPA 25 EN EL PUNTO NOMINAL.</b> La presión neta obtenida a caudal nominal es igual o superior al 95 % de la presión nominal indicada en placa. Este resultado corresponde al punto nominal evaluado. Si existe una curva original/certificada o histórica, se recomienda incorporarla para ampliar la comparación a otros puntos de la curva.`;
+   }else{
+      nfpaBox.innerHTML=`<b>NO CONFORME — REQUIERE INVESTIGACIÓN.</b> La presión neta obtenida a caudal nominal es inferior al 95 % de la presión nominal de placa. NFPA 25 trata esta desviación como una condición que debe investigarse. No se debe descartar automáticamente la bomba: verificar instrumentación, RPM, condiciones de succión/descarga y estado hidráulico-mecánico; realizar mantenimiento/correcciones según hallazgos y repetir la prueba.`;
+   }
+ }else if(refValida && compared>0){
+   if(below95===0){
+      nfpaBox.innerHTML=`<b>CONFORME — CRITERIOS NFPA 25 EVALUADOS.</b> Los puntos comparados alcanzan al menos el 95 % de la referencia ingresada. Confirmar la edición adoptada por la AHJ y que los puntos ensayados cubran el rango requerido.`;
+   }else{
+      nfpaBox.innerHTML=`<b>NO CONFORME — REQUIERE INVESTIGACIÓN.</b> Existen puntos por debajo del 95 % de la referencia ingresada. Investigar condiciones del ensayo y estado del equipo antes de determinar reparación o reemplazo.`;
+   }
+ }else{
+   nfpaBox.innerHTML=`<b>EVALUACIÓN INCOMPLETA.</b> Complete la información de placa/referencia y al menos 3 puntos válidos de campo.`;
+ }
+
+ // En modo placa, si falla el punto nominal, registrar el hallazgo para activar recomendaciones/anexo.
+ if(ref==="placa" && cumpleNFPA25Nominal===false){
+   fail.push(`Punto nominal: presión neta ${r100.p.toFixed(1)} psi < 95 % de presión nominal de placa (${p95ref.toFixed(1)} psi).`);
+   diag.push("El punto nominal queda fuera del criterio configurado de NFPA 25. Investigar condiciones de prueba, instrumentación, RPM, succión/descarga y condición hidráulico-mecánica; realizar mantenimiento/corrección según hallazgos y repetir la prueba.");
+ }
+
+ // Activar el anexo solo después de haber calculado el resultado NFPA 25.
+ const tieneFallas = fail.length>0 || below95>0 || cumpleNFPA25Nominal===false;
+ const anexoWrap=document.getElementById("anexoWrap");
+ const anexoRec=document.getElementById("anexoRecomendacion");
+ if(tieneFallas){
+   anexoWrap.style.display="block";
+   anexoWrap.classList.remove("hidden-annex");
+   anexoRec.innerHTML="<strong>Anexo activado por hallazgos:</strong> se detectaron desviaciones en la evaluación. Revise la matriz de posibles causas y acciones de investigación antes de concluir sobre reparación o reemplazo.";
+ }else{
+   anexoWrap.style.display="none";
+   anexoWrap.classList.add("hidden-annex");
+   anexoRec.innerHTML="<strong>Lectura recomendada:</strong> no se detectaron fallas que activen el anexo diagnóstico. Puede consultarlo como referencia preventiva sobre posibles causas de problemas de bombas contra incendio.";
+ }
+
+ let estado,cls;
+ if(fail.length){
+   estado="DESEMPEÑO FUERA DEL CRITERIO — REQUIERE INVESTIGACIÓN";
+   cls="bad";
+ }else if(validPoints<3){
+   estado="FALTAN PUNTOS DE CAMPO PARA CONSTRUIR LA CURVA";
+   cls="warn";
+ }else if(ref==="placa" && cumpleNFPA25Nominal===true){
+   estado="CONFORME — CRITERIO NFPA 25 EVALUADO EN EL PUNTO NOMINAL";
+   cls="ok";
+ }else if(warn.length){
+   estado="REVISAR / COMPLETAR VALIDACIÓN";
+   cls="warn";
+ }else{
+   estado="DESEMPEÑO SATISFACTORIO EN LOS CRITERIOS EVALUADOS";
+   cls="ok";
+ }
+
+ let box=document.getElementById("resultado");box.className="result "+cls;
+ box.innerHTML=`<strong>${estado}</strong>
+ ${fail.length?`<p><b>Hallazgos</b><br>${fail.map(x=>"• "+x).join("<br>")}</p>`:""}
+ ${warn.length?`<p><b>Verificaciones pendientes</b><br>${warn.map(x=>"• "+x).join("<br>")}</p>`:""}
+ ${ok.length?`<p><b>Criterios satisfechos</b><br>${ok.map(x=>"• "+x).join("<br>")}</p>`:""}
+ ${diag.length?`<p><b>Recomendación AquaCheck</b><br>${diag.map(x=>"• "+x).join("<br>")}</p>`:""}
+ <p class="small"><b>Importante:</b> para NFPA 25, la evaluación de desempeño requiere comparar la presión neta obtenida con una referencia válida según la edición adoptada por la AHJ. El criterio del 95 % se mantiene en AquaCheck como criterio configurado sujeto a confirmación de edición. El 65 % no se utiliza como criterio de NFPA 25 ni como sustituto de una curva original. La herramienta no diagnostica una causa mecánica ni ordena reemplazar la bomba.</p>`;
+
+ document.getElementById("trRef").textContent=
+   ref==="placa" ? "Solo datos de placa" :
+   ref==="fabricante" ? "Curva certificada del fabricante" :
+   ref==="historica" ? "Curva histórica / original de aceptación o prueba anterior" :
+   "No indicada";
+ document.getElementById("trRpm").textContent=nr?nr+" rpm":"No indicada";
+
+ document.getElementById("trRes").textContent=estado;
+draw(field,refs,null,{qr,r100,r150,p95ref});
+ box.scrollIntoView({behavior:"smooth"});
+}
+actualizarReferencia();
+draw([],[],null);
+</script>
+</body></html>
