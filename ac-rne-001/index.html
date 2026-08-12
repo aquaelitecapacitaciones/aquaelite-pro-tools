@@ -1,1 +1,217 @@
-AquaCheck AC-RNE-001
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AC-RNE-001 AquaCheck PCI Vivienda v1.4</title>
+<style>
+:root{--n:#0b2748;--b:#155a96;--l:#d9e2ec;--m:#607286;--red:#b42318;--amber:#9a6700;--green:#157347}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fa;color:#172b3a}
+header{background:linear-gradient(135deg,#071c34,#0d3a67);color:#fff;padding:24px 18px}
+.wrap,main{max-width:1180px;margin:auto}.title{font-size:28px;font-weight:900}.sub{font-size:12px;color:#dbe8f4;margin-top:5px}
+main{padding:15px}.card{background:#fff;border:1px solid var(--l);border-radius:14px;padding:18px;margin:14px 0}
+h2{font-size:18px;color:var(--n);margin-top:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+label{display:block;font-size:11px;font-weight:800;color:#42566a;margin:4px 0}
+input,select,textarea{width:100%;padding:9px;border:1px solid #cbd5df;border-radius:8px;background:#fff}
+textarea{min-height:62px}.small{font-size:11px;color:var(--m);line-height:1.45}.tiny{font-size:9.5px;color:var(--m);line-height:1.45}
+.note{background:#eef5fb;border-left:4px solid var(--b);padding:11px;border-radius:7px;font-size:11px;line-height:1.45}
+.warn{background:#fff8e8;border-left-color:#c78a00}.criterion{border:1px solid var(--l);border-radius:11px;padding:13px;margin:10px 0}
+.name{font-size:13px;font-weight:900;color:var(--n)}.status{font-size:12px;font-weight:900;margin-top:6px;line-height:1.45}
+.ok{color:var(--green)}.no{color:var(--red)}.ver{color:var(--amber)}.basis{font-size:9.5px;color:#64748b;line-height:1.45;margin-top:5px}
+.auth{margin-top:9px}.summary{padding:15px;border-radius:10px;background:#eef5fb;border:1px solid #aac6de}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:12px}.photo{border:1px dashed #9fb0c0;padding:10px;border-radius:9px}.photo img{display:none;width:100%;max-height:220px;object-fit:contain;margin-top:7px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;position:sticky;bottom:0;background:#f4f7fae8;padding:10px 0}
+.btn{border:0;border-radius:8px;padding:11px 15px;font-weight:900;cursor:pointer}.pri{background:var(--n);color:#fff}.sec{background:#e5edf4}
+@media(max-width:800px){.grid,.photos{grid-template-columns:1fr}.title{font-size:23px}}
+@media print{body{background:#fff}.actions,.np{display:none!important}.card{break-inside:avoid;margin:7px 0}#photoSec{break-before:page}.photos{grid-template-columns:repeat(2,1fr)}}
+</style></head>
+<body>
+<header><div class="wrap"><div style="font-size:12px;letter-spacing:2px">AQUAELITE® · AQUACHECK PCI · RNE</div><div class="title">AC-RNE-001 | Vivienda</div><div class="sub">Motor automático de criterios de seguridad y protección contra incendios · Digital v1.4</div></div></header>
+<main>
+
+<section class="card">
+<h2>1. Datos objetivos del proyecto</h2>
+<div class="grid">
+<div><label>Proyecto</label><input id="project"></div>
+<div><label>Ubicación</label><input id="location"></div>
+<div><label>Fecha</label><input id="date" type="date"></div>
+<div><label>Pisos computables de vivienda</label><input id="floors" type="number" min="1"></div>
+<div><label>¿Azotea?</label><select id="roof"><option value="n">No</option><option value="s">Sí</option></select></div>
+<div><label>¿Semisótano?</label><select id="semi"><option value="n">No</option><option value="s">Sí</option></select></div>
+<div><label>Altura calle/vereda → NPT último piso computable (m)</label><input id="height" type="number" step=".01"></div>
+<div><label>N.º de escaleras proyectadas</label><input id="stairs" type="number" min="0"></div>
+<div><label>¿Escalera de evacuación presurizada?</label><select id="press"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+<div><label>Tipo de escalera según proyecto</label><select id="stairType"><option value="">No verificado</option><option>Evacuación presurizada</option><option>Evacuación con ventilación</option><option>Abierta / exterior</option><option>Integrada</option><option>Otra</option></select></div>
+<div><label>¿Cuenta con vestíbulo previo ventilado?</label><select id="vest"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+<div><label>¿Vestíbulo previo sin carga combustible?</label><select id="vestNoLoad"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+<div><label>¿Detectores de humo en hall/pasillo de dormitorios de cada departamento?</label><select id="detHall"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+<div><label>¿Alarma de incendio en cada departamento conectada a sistema centralizado?</label><select id="alarmCentral"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+
+<div><label>Distancia máxima de recorrido del evacuante (m)</label><input id="travel" type="number" step=".01"></div>
+<div><label>¿Rociadores instalados/proyectados?</label><select id="spr"><option value="n">No</option><option value="s">Sí</option></select></div>
+
+<div><label>Viviendas de 1 dormitorio</label><input id="u1" type="number" min="0" value="0"></div>
+<div><label>Viviendas de 2 dormitorios</label><input id="u2" type="number" min="0" value="0"></div>
+<div><label>Viviendas de 3 dormitorios o más</label><input id="u3" type="number" min="0" value="0"></div>
+<div><label>Aforo/carga declarada en expediente</label><input id="declOcc" type="number" min="0"></div>
+
+<div><label>Área estacionamientos subterráneos (m²)</label><input id="park" type="number" min="0" step=".01" value="0"></div>
+<div><label>Distancia hidrante público → siamesa (m)</label><input id="hydrantDist" type="number" min="0" step=".01"></div>
+<div><label>¿Existe Compañía de Bomberos en la localidad?</label><select id="fireco"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+<div><label>¿Uso mixto?</label><select id="mixed"><option value="n">No</option><option value="s">Sí</option></select></div>
+<div><label>Otro uso, si existe</label><input id="otherUse"></div>
+</div>
+<div class="note" style="margin-top:12px"><b>Medición del recorrido:</b> ingrese la distancia desde el punto más alejado del recinto o piso hasta el <b>ingreso a un medio seguro de evacuación</b>, como una puerta, pasillo o escalera protegidos contra fuego y humos. La referencia general usada por MVCS es 45 m sin rociadores o 60 m con rociadores.</div>
+</section>
+
+<section class="card">
+<h2>2. Base normativa</h2>
+<div class="note"><b>Control normativo: 11/08/2026.</b> Motor basado en RNE A.010, A.020, A.130 y G.040 vigentes para este alcance. El proyecto de modificación A.130 de 2026 no se aplica automáticamente como norma vigente.</div>
+</section>
+
+<section class="card">
+<h2>3. Cálculos y criterios AquaCheck</h2>
+<p class="small">A partir de este punto la herramienta responde. No se solicita marcar “cumple/no cumple”. Cada criterio deja un renglón para registrar la opinión del evaluador, municipalidad, Comisión Técnica o autoridad competente.</p>
+<div id="criteria"></div>
+</section>
+
+<section class="card"><h2>4. Síntesis automática</h2><div id="summary" class="summary">Ingrese los datos y presione <b>Calcular requerimientos</b>.</div></section>
+
+<section class="card" id="photoSec"><h2>5. Registro fotográfico</h2><div class="photos" id="photoGrid"></div></section>
+
+<section class="card"><h2>6. Conformidad y control técnico</h2>
+<div class="grid"><div><label>Profesional responsable</label><input></div><div><label>CIP / colegiatura</label><input></div><div><label>Empresa / consultor</label><input></div></div>
+<label style="margin-top:10px">Apreciación técnica Aquaelite</label><textarea></textarea>
+</section>
+
+<div class="actions">
+<button class="btn pri" onclick="calc()">Calcular requerimientos</button>
+<button class="btn sec" onclick="window.print()">Imprimir / Guardar PDF</button>
+<button class="btn sec" onclick="location.reload()">Limpiar</button>
+</div>
+
+<script>
+const CR=[
+["AF-01","Carga de ocupantes / aforo"],
+["EV-01","Distancia máxima de recorrido"],
+["EV-02","Número y condición de escaleras"],
+["EV-03","Escalera presurizada / protección"],
+["PCI-01","Red PCI + extintores + detección y alarma"],
+["PCI-02","Montante seca / siamesa (>5 hasta 10 pisos)"],
+["PCI-03","Gabinetes contra incendio"],
+["PCI-04","Sistema de bombeo / reserva"],
+["PCI-05","Rociadores automáticos"],
+["PCI-06","Estacionamientos subterráneos"],
+["ESP-01","Uso mixto"]
+];
+function e(id){return document.getElementById(id)}
+function n(id){return parseFloat(e(id).value)||0}
+function v(id){return e(id).value}
+function build(){let c=e("criteria");CR.forEach((x,i)=>{let d=document.createElement("div");d.className="criterion";d.innerHTML=`<div class="name">${x[0]} · ${x[1]}</div><div id="r${i}" class="status ver">Pendiente de cálculo.</div><div id="b${i}" class="basis"></div><div class="auth"><label>Comentario / criterio del evaluador o autoridad</label><input placeholder="Registrar observación, exigencia o discrepancia"></div>`;c.appendChild(d)})}
+build();
+function set(i,text,kind,basis){let r=e("r"+i);r.textContent=text;r.className="status "+kind;e("b"+i).innerHTML=basis}
+
+function calc(){
+ const floors=n("floors"), height=n("height"), travel=n("travel"), stairs=n("stairs"), spr=v("spr")==="s";
+ const press=v("press"), hd=n("hydrantDist"), fire=v("fireco"), park=n("park"), roof=v("roof")==="s";
+ const occ=2*n("u1")+3*n("u2")+5*n("u3"), decl=n("declOcc");
+
+ let t=occ?`Aforo mínimo de referencia calculado por composición: ${occ} habitantes. `:"No se ingresó composición de viviendas. ";
+ if(occ&&decl)t+=`Expediente declara ${decl}. ${decl>=occ?"El valor declarado no es menor que el calculado.":"ATENCIÓN: el valor declarado es menor que el calculado; revisar expediente."}`;
+ set(0,t,(occ&&decl&&decl<occ)?"no":(!occ||!decl)?"ver":"ok","<b>Sustento:</b> A.020 Art. 5: 1 dormitorio=2 habitantes; 2 dormitorios=3; 3 o más dormitorios=5. A.130 Art. 20 remite a las normas por tipología para la carga de ocupantes.");
+
+ const lim=spr?60:45;
+ let ev=travel?`Recorrido ingresado: ${travel.toFixed(1)} m. Referencia general: ${lim} m ${spr?"con":"sin"} rociadores. ${travel<=lim?"No supera la referencia general.":"SUPERA la referencia general; revisar diseño de evacuación."}`:`Falta ingresar recorrido. Referencia general: ${lim} m ${spr?"con":"sin"} rociadores.`;
+ set(1,ev,travel?(travel<=lim?"ok":"no"):"ver","<b>Criterio MVCS:</b> la distancia se mide desde el punto más alejado del recinto hasta el ingreso a un medio seguro de evacuación (puerta, pasillo o escalera protegidos contra fuego y humos).");
+
+ let st=stairs?`Escaleras registradas: ${stairs}. `:"Número de escaleras no ingresado. ";
+ let stairKind="ver";
+ if(stairs===1){
+   const hv=height>15 && height<=60;
+   const vv=v("vest")==="s";
+   const vl=v("vestNoLoad")==="s";
+   const dh=v("detHall")==="s";
+   const ac=v("alarmCentral")==="s";
+   const missing=[];
+   if(!height)missing.push("altura no ingresada");
+   else if(!hv)missing.push(`altura ${height.toFixed(1)} m fuera del rango preliminar evaluado (>15 m y ≤60 m)`);
+   if(v("vest")==="")missing.push("vestíbulo previo ventilado no verificado");
+   else if(!vv)missing.push("no cuenta con vestíbulo previo ventilado");
+   if(v("vestNoLoad")==="")missing.push("carga combustible del vestíbulo no verificada");
+   else if(!vl)missing.push("vestíbulo con carga combustible");
+   if(v("detHall")==="")missing.push("detectores en hall/pasillo de dormitorios no verificados");
+   else if(!dh)missing.push("faltan detectores de humo en hall/pasillo de dormitorios");
+   if(v("alarmCentral")==="")missing.push("alarma centralizada en departamentos no verificada");
+   else if(!ac)missing.push("alarma de los departamentos no conectada a sistema centralizado");
+   if(missing.length===0){
+     st=`EXCEPCIÓN DE UNA SOLA ESCALERA: POTENCIALMENTE VIABLE con los datos ingresados. Edificio de ${floors||"?"} pisos y ${height.toFixed(1)} m; cuenta con vestíbulo previo ventilado sin carga combustible, detectores de humo en hall/pasillo de dormitorios y alarma interior conectada a sistema centralizado. Debe verificarse el resto de condiciones del Art. 28 A.010 antes de emitir conformidad definitiva.`;
+     stairKind="ok";
+   }else{
+     st=`UNA SOLA ESCALERA: todavía NO puede declararse viable. Falta/corregir: ${missing.join("; ")}.`;
+     stairKind=missing.some(x=>x.includes("fuera del rango")||x.includes("no cuenta")||x.includes("faltan")||x.includes("no conectada")||x.includes("carga combustible"))?"no":"ver";
+   }
+ } else if(stairs>=2){
+   st+="Se registran dos o más escaleras; revisar separación, ancho y protección conforme al proyecto.";
+   stairKind="ok";
+ }
+ set(2,st,stairKind,"<b>Sustento oficial MVCS / A.010 Art. 28:</b> la regla general es disponer de dos escaleras de evacuación, pero existe una excepción residencial condicionada. El MVCS precisa requisitos adicionales para una sola escalera, incluyendo detectores de humo por lo menos en el hall de dormitorios y alarma de incendios al interior de cada departamento conectada a un sistema centralizado. Asimismo, la consulta oficial refiere una altura no mayor de 60 m para la excepción. <b>Nota:</b> AquaCheck evalúa únicamente las condiciones capturadas y exige revisar el resto del Art. 28.");
+
+ let ps="";
+ let pkind="ver";
+ if(v("vest")==="s"){
+   ps="Se declaró vestíbulo previo ventilado. Verificar diseño, puertas, ventilación y ausencia de carga combustible conforme A.010.";
+   pkind=v("vestNoLoad")==="s"?"ok":"ver";
+ }else if(press==="s"){
+   ps="Se declaró escalera presurizada. Verificar que esta tipología sea compatible con el uso residencial y con la versión vigente de A.010 adoptada en el expediente; no asumirla automáticamente por marcar 'Sí'.";
+ }else{
+   ps="Protección de escalera no completamente acreditada. Para la excepción de una sola escalera debe verificarse la solución de escalera de evacuación y el vestíbulo previo conforme A.010.";
+ }
+ set(3,ps,pkind,"<b>Sustento A.010:</b> las escaleras de evacuación son protegidas contra fuego y humos y la solución aplicable debe corresponder a la versión vigente de A.010. <b>Para la excepción residencial de una sola escalera</b>, AquaCheck verifica especialmente el vestíbulo previo y las condiciones de detección/alarma indicadas por el MVCS.");
+
+ let base=!floors?"Falta número de pisos.":floors>5?`Para ${floors} pisos, Art. 66 activa red de agua contra incendios, extintores portátiles y detección/alarma.`:`Con ${floors} pisos no se activa por el umbral >5 el paquete del Art. 66; revisar otras condiciones aplicables.`;
+ set(4,base,floors?"ok":"ver","<b>Sustento:</b> RNE A.130 Art. 66.");
+
+ let dry="",dk="ver";
+ if(!floors)dry="Falta número de pisos.";
+ else if(floors>5&&floors<=10){
+   let fail=[];
+   if(!stairs)fail.push("escalera de evacuación no verificada");
+   if(!hd)fail.push("distancia al hidrante no ingresada");
+   else if(hd>75)fail.push(`hidrante a ${hd.toFixed(1)} m (>75 m)`);
+   if(fire==="n")fail.push("localidad sin Compañía de Bomberos");
+   if(fire==="")fail.push("Compañía de Bomberos no verificada");
+   if(fail.length){dry=`MONTANTE SECA NO ADMISIBLE BAJO ART. 67 con los datos ingresados: ${fail.join("; ")}. Debe resolverse la red de agua contra incendios sin acogerse a esta alternativa y verificar el sistema que corresponda según A.130.`;dk="no";}
+   else{dry=`MONTANTE SECA POTENCIALMENTE APLICABLE: ${floors} pisos, hidrante a ${hd.toFixed(1)} m y localidad con Compañía de Bomberos. Aún debe verificarse integralmente que la escalera de evacuación cumpla A.010 y el arreglo completo del Art. 67.`;dk="ver";}
+ } else {dry=`Art. 67 no corresponde al rango específico >5 hasta 10 pisos. Pisos ingresados: ${floors}.`;dk="ok";}
+ set(5,dry,dk,"<b>Sustento RNE A.130 Art. 67:</b> montante seca Ø≥100 mm y salidas valvuladas de 65 mm por nivel solo si: (a) escalera de evacuación conforme A.010; (b) hidrante público a no más de 75 m medidos desde la siamesa; y (c) localidad con Compañía de Bomberos.");
+
+ let gab=!floors?"Falta número de pisos.":floors>10?`GABINETES REQUERIDOS para ${floors} pisos: Art. ${floors<=20?"69":"70"} exige gabinetes de manguera de 1½ in en todos los niveles.`:`Con ${floors} pisos no se activa el requisito de gabinetes de los Arts. 69–70 por número de pisos.`;
+ set(6,gab,floors?"ok":"ver","<b>Sustento:</b> A.130 Arts. 69 y 70.");
+
+ let pump=!floors?"Falta número de pisos.":floors>10&&floors<=20?`SISTEMA PRESURIZADO / BOMBA Y RESERVA REQUERIDOS: Art. 69 exige bomba automática ≥250 gpm, ≥60 psi en el punto más desfavorable y reserva útil exclusiva ≥28 m³.`:floors>20?"SISTEMA PRESURIZADO REQUERIDO: Art. 70 exige bomba conforme NFPA 20 y reserva conforme NFPA 13.":floors>5&&floors<=10&&dk==="no"?"La montante seca queda descartada. Debe verificarse una solución de red de agua contra incendios que no dependa de la excepción del Art. 67.":"No se activa por Arts. 69–70 un sistema de bombeo/reserva por número de pisos; revisar otras condiciones.";
+ set(7,pump,"ver","<b>Sustento:</b> A.130 Arts. 66, 67, 69 y 70. El Art. 67 solo habilita la alternativa seca cuando se cumplen sus tres condiciones.");
+
+ let rr=!floors?"Falta número de pisos.":floors>20?`ROCIADORES EN TODO EL EDIFICIO REQUERIDOS por Art. 70 (${floors} pisos).`:floors===20&&roof?"20 pisos + azotea: NO se activa el Art. 70 por la sola azotea, según criterio oficial MVCS.":`Con ${floors} pisos no se activa el Art. 70 por el umbral >20 pisos.`;
+ set(8,rr,floors?"ok":"ver","<b>Sustento:</b> A.130 Art. 70. <b>MVCS:</b> la azotea no se contabiliza como piso adicional para activar por sí sola este artículo.");
+
+ let pk=park>750?`ROCIADORES EN ESTACIONAMIENTOS REQUERIDOS: ${park.toFixed(1)} m² > 750 m².`:`Área declarada ${park.toFixed(1)} m². No supera el umbral >750 m² del Art. 68.`;
+ set(9,pk,"ok","<b>Sustento:</b> A.130 Art. 68: estacionamientos subterráneos cuya sumatoria de áreas techadas supera 750 m² requieren rociadores conforme NFPA 13.");
+
+ let mx=v("mixed")==="s"?`USO MIXTO DECLARADO${v("otherUse")?": "+v("otherUse"):""}. Esta ficha no puede emitir criterio global solo con vivienda; deben evaluarse el otro uso y los medios comunes.`:"No se declaró uso mixto.";
+ set(10,mx,v("mixed")==="s"?"ver":"ok","<b>Criterio MVCS:</b> los medios comunes de edificaciones de uso mixto deben analizarse integralmente.");
+
+ let alerts=[];
+ if(stairs===1){
+   if(e("r2").classList.contains("ok"))alerts.push("• Excepción de una sola escalera: potencialmente viable con los datos ingresados; revisar el resto del Art. 28.");
+   else alerts.push("• Excepción de una sola escalera: aún no acreditada con los datos ingresados.");
+ }
+ if(floors>5&&floors<=10&&dk==="no")alerts.push("• Montante seca descartada bajo Art. 67 con los datos ingresados.");
+ if(floors>10)alerts.push("• Gabinetes contra incendio requeridos.");
+ if(floors>20)alerts.push("• Rociadores automáticos requeridos en todo el edificio.");
+ if(park>750)alerts.push("• Rociadores requeridos en estacionamientos subterráneos.");
+ e("summary").innerHTML=`<b>Síntesis AquaCheck</b><br>${alerts.length?alerts.join("<br>"):"No se detectaron activaciones críticas adicionales con los datos ingresados."}<br><span class="tiny">La síntesis no reemplaza el expediente ni la revisión formal de la autoridad.</span>`;
+}
+let pg=e("photoGrid");for(let i=1;i<=4;i++){let d=document.createElement("div");d.className="photo";d.innerHTML=`<label>Evidencia ${i}</label><input class="np" type="file" accept="image/*" onchange="pic(this,'p${i}')"><img id="p${i}"><label>Comentario</label><textarea></textarea>`;pg.appendChild(d)}
+function pic(x,id){let f=x.files&&x.files[0];if(!f)return;let r=new FileReader();r.onload=q=>{let im=e(id);im.src=q.target.result;im.style.display="block"};r.readAsDataURL(f)}
+</script>
+</main></body></html>
