@@ -1,1 +1,96 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AC-RNE-002 Educación v1.1</title>
+<style>
+:root{--n:#0b2748;--b:#155a96;--l:#d9e2ec;--m:#607286;--ok:#157347;--bad:#b42318;--warn:#9a6700}
+*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f7fa;color:#172b3a}
+header{background:linear-gradient(135deg,#071c34,#0d3a67);color:#fff;padding:24px 18px}
+.wrap,main{max-width:1180px;margin:auto}.title{font-size:28px;font-weight:900}.sub{font-size:12px;color:#dbe8f4}
+main{padding:15px}.card{background:#fff;border:1px solid var(--l);border-radius:14px;padding:18px;margin:14px 0}
+h2{font-size:18px;color:var(--n);margin-top:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+label{display:block;font-size:11px;font-weight:800;color:#42566a;margin:4px 0}input,select,textarea{width:100%;padding:9px;border:1px solid #cbd5df;border-radius:8px}
+textarea{min-height:62px}.small{font-size:11px;color:var(--m);line-height:1.45}.tiny{font-size:9.5px;color:var(--m);line-height:1.45}
+.note{background:#eef5fb;border-left:4px solid var(--b);padding:11px;border-radius:7px;font-size:11px;line-height:1.45}.warn{background:#fff8e8;border-left-color:#c78a00}
+.criterion{border:1px solid var(--l);border-radius:11px;padding:13px;margin:10px 0}.name{font-size:13px;font-weight:900;color:var(--n)}
+.status{font-size:12px;font-weight:900;margin-top:6px;line-height:1.45}.ok{color:var(--ok)}.no{color:var(--bad)}.ver{color:var(--warn)}
+.basis{font-size:9.5px;color:#64748b;line-height:1.45;margin-top:5px}.auth{margin-top:9px}.summary{padding:15px;border-radius:10px;background:#eef5fb;border:1px solid #aac6de}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:12px}.photo{border:1px dashed #9fb0c0;padding:10px;border-radius:9px}.photo img{display:none;width:100%;max-height:220px;object-fit:contain;margin-top:7px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;position:sticky;bottom:0;background:#f4f7fae8;padding:10px 0}.btn{border:0;border-radius:8px;padding:11px 15px;font-weight:900;cursor:pointer}.pri{background:var(--n);color:#fff}.sec{background:#e5edf4}
+@media(max-width:800px){.grid,.photos{grid-template-columns:1fr}.title{font-size:23px}}
+@media print{body{background:#fff}.actions,.np{display:none!important}.card{break-inside:avoid;margin:7px 0}#photoSec{break-before:page}}
+</style></head><body>
+<header><div class="wrap"><div style="font-size:12px;letter-spacing:2px">AQUAELITE® · AQUACHECK RNE</div><div class="title">AC-RNE-002 | Educación</div><div class="sub">Evaluación preliminar automatizada de evacuación y seguridad · Digital v1.1</div></div></header>
+<main>
 
+<section class="card"><h2>1. Datos objetivos</h2><div class="grid">
+<div><label>Proyecto / institución</label><input id="project"></div><div><label>Ubicación</label><input></div><div><label>Fecha</label><input type="date"></div>
+<div><label>Tipo de servicio educativo</label><select id="service"><option value="inicial">Inicial</option><option value="primaria">Primaria</option><option value="secundaria">Secundaria</option><option value="eba">EBA</option><option value="ebe">EBE</option><option value="superior">Educación Superior</option><option value="cetpro">CETPRO</option></select></div>
+<div><label>¿Institución privada de Educación Básica?</label><select id="private"><option value="n">No</option><option value="s">Sí</option></select></div>
+<div><label>Pisos con actividad de estudiantes/docentes</label><input id="floors" type="number" min="1"></div>
+<div><label>N.º de escaleras</label><input id="stairs" type="number" min="0"></div><div><label>¿La escalera constituye medio seguro protegido contra fuego y humos?</label><select id="safeStair"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div><div><label>Máxima carga de evacuantes por piso</label><input id="floorLoad" type="number" min="0"></div>
+<div><label>Recorrido puerta aula más alejada → zona segura (m)</label><input id="travel" type="number" step=".01"></div>
+<div><label>¿Rociadores automáticos?</label><select id="spr"><option value="n">No</option><option value="s">Sí</option></select></div>
+<div><label>¿Cada ambiente estudiantil tiene salida directa de rescate?</label><select id="rescue"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+<div><label>Ancho libre salida rescate (m)</label><input id="rescueW" type="number" step=".01"></div>
+<div><label>Alto libre salida rescate (m)</label><input id="rescueH" type="number" step=".01"></div>
+<div><label>Altura NPT → parte baja salida rescate (m)</label><input id="rescueSill" type="number" step=".01"></div>
+<div><label>¿Abre desde interior sin herramientas?</label><select id="rescueOpen"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+<div><label>¿Abre ≥90° hacia área con acceso a vía pública?</label><select id="rescueWay"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+</div>
+<div class="note" style="margin-top:12px"><b>¿De dónde a dónde se mide el recorrido?</b> A.040 Art. 18(d) parte de la <b>puerta del aula más alejada</b> y termina en una <b>zona segura</b>: escalera de evacuación, refugio o exterior. Conforme al criterio oficial MVCS/A.130, una escalera puede ser punto final cuando constituye un <b>medio seguro de evacuación protegido contra fuego y humos</b>. Si la escalera no reúne esa condición, no se corta la medición en su ingreso: se continúa por la ruta hasta alcanzar el exterior o un área segura. <b>“No presurizada” no equivale automáticamente a “no protegida”</b>; debe verificarse la solución de protección admitida por A.010/A.130.</div>
+</section>
+
+<section class="card"><h2>2. Áreas para cálculo de ocupantes</h2><div class="grid">
+<div><label>Aulas (m²)</label><input id="aulas" type="number" step=".01"></div><div><label>SUM (m²)</label><input id="sum" type="number" step=".01"></div><div><label>Asientos auditorios</label><input id="aud" type="number"></div>
+<div><label>Talleres/laboratorios (m²)</label><input id="labs" type="number" step=".01"></div><div><label>Bibliotecas (m²)</label><input id="bib" type="number" step=".01"></div><div><label>Oficinas (m²)</label><input id="ofi" type="number" step=".01"></div>
+</div></section>
+
+<section class="card"><h2>3. Ambiente crítico para puertas</h2><div class="grid">
+<div><label>Nombre del ambiente</label><input id="roomName"></div><div><label>Área (m²)</label><input id="roomArea" type="number" step=".01"></div>
+<div><label>Uso</label><select id="roomUse"><option value="aula">Aula</option><option value="sum">SUM</option><option value="lab">Taller/Laboratorio</option><option value="bib">Biblioteca</option><option value="ofi">Oficina</option><option value="aud">Auditorio</option></select></div>
+<div><label>Asientos (si auditorio)</label><input id="roomSeats" type="number"></div><div><label>N.º puertas</label><input id="roomDoors" type="number"></div><div><label>Ancho mínimo vano (m)</label><input id="doorWidth" type="number" step=".01"></div>
+<div><label>Separación entre puertas (m)</label><input id="doorSep" type="number" step=".01"></div><div><label>Diagonal mayor del ambiente (m)</label><input id="roomDiag" type="number" step=".01"></div><div><label>¿Abren en sentido de evacuación?</label><select id="doorFlow"><option value="">No verificado</option><option value="s">Sí</option><option value="n">No</option></select></div>
+</div>
+<div class="note" style="margin-top:12px"><b>Separación entre puertas — ¿qué puertas?</b> Aplica a las <b>dos puertas de salida del mismo ambiente educativo</b> cuando su aforo supera 50 personas. A.040 Art. 16.2 exige que estén distanciadas para permitir rutas alternativas y que la distancia entre ellas no sea menor a 1/3 de la diagonal mayor del ambiente.<br><br><b>Diagonal mayor — ¿de dónde a dónde?</b> AquaCheck la registra en planta como la mayor distancia recta entre dos vértices opuestos del perímetro interior del ambiente. Se solicita porque ese valor es la base matemática usada por A.040 para determinar la separación mínima entre las dos puertas.<br><br><b>Criterio de toma de la separación:</b> para que el levantamiento sea trazable, AquaCheck solicita la distancia entre los puntos más próximos de los vanos de las dos puertas. La A.040 fija la relación “≥ 1/3 de la diagonal mayor”, pero el Art. 16.2 no desarrolla un método gráfico adicional para escoger los puntos de medición; por ello la ficha identifica expresamente el criterio de levantamiento utilizado.</div>
+</section>
+
+<section class="card"><h2>4. Base normativa</h2>
+<div class="note"><b>Control 12/08/2026.</b> A.040 Educación continúa publicada oficialmente por MVCS bajo RM 068-2020-VIVIENDA. Se complementa con A.010 y A.130. MINEDU aprobó “Criterios Generales de Diseño para Infraestructura Educativa” mediante RVM 068-2025-MINEDU; para instituciones privadas de Educación Básica aplica además RVM 028-2025-MINEDU, y para IES/EEST/CETPRO la RVM 089-2026-MINEDU.</div>
+<div class="note warn" style="margin-top:8px"><b>PCI:</b> esta v1.0 no inventa umbrales universales para detección, gabinetes o rociadores cuando el supuesto específico no está inequívocamente identificado en la norma vigente. Esos puntos quedan como verificación técnica específica.</div>
+</section>
+
+<section class="card"><h2>5. Cálculos y criterios AquaCheck</h2><div id="criteria"></div></section>
+<section class="card"><h2>6. Síntesis</h2><div id="summary" class="summary">Complete los datos y pulse <b>Calcular requerimientos</b>.</div></section>
+<section class="card" id="photoSec"><h2>7. Registro fotográfico</h2><div class="photos" id="photoGrid"></div></section>
+<section class="card"><h2>8. Conformidad</h2><div class="grid"><div><label>Profesional responsable</label><input></div><div><label>CIP / colegiatura</label><input></div><div><label>Empresa / consultor</label><input></div></div><label>Apreciación técnica Aquaelite</label><textarea></textarea></section>
+
+<div class="actions"><button class="btn pri" onclick="calc()">Calcular requerimientos</button><button class="btn sec" onclick="window.print()">Imprimir / Guardar PDF</button><button class="btn sec" onclick="location.reload()">Limpiar</button></div>
+
+<script>
+const CR=[["ED-01","Carga de ocupantes"],["ED-02","Puertas del ambiente crítico"],["ED-03","Ancho y apertura de puertas"],["ED-04","Número de escaleras"],["ED-05","Excepción de una sola escalera"],["ED-06","Distancia de recorrido"],["ED-07","Características de escaleras"],["ED-08","Señalización e iluminación de emergencia"],["PCI-01","Detección y alarma"],["PCI-02","Sistema de agua / gabinetes"],["PCI-03","Rociadores"],["DOC-01","Norma MINEDU aplicable"]];
+function e(id){return document.getElementById(id)} function n(id){return parseFloat(e(id).value)||0} function v(id){return e(id).value} function ce(x){return Math.ceil(x-1e-9)}
+function build(){let c=e("criteria");CR.forEach((x,i)=>{let d=document.createElement("div");d.className="criterion";d.innerHTML=`<div class="name">${x[0]} · ${x[1]}</div><div id="r${i}" class="status ver">Pendiente de cálculo.</div><div id="b${i}" class="basis"></div><div class="auth"><label>Comentario / criterio del evaluador o autoridad</label><input placeholder="Registrar observación o exigencia"></div>`;c.appendChild(d)})} build();
+function set(i,text,k,b){e("r"+i).textContent=text;e("r"+i).className="status "+k;e("b"+i).innerHTML=b}
+function rload(){let u=v("roomUse"),a=n("roomArea");if(u==="aud")return n("roomSeats");if(!a)return 0;if(u==="aula")return ce(a/1.5);if(u==="sum")return ce(a);if(u==="lab")return ce(a/3);if(u==="bib")return ce(a/2);if(u==="ofi")return ce(a/9.5);return 0}
+function calc(){
+let total=ce(n("aulas")/1.5)+ce(n("sum"))+n("aud")+ce(n("labs")/3)+ce(n("bib")/2)+ce(n("ofi")/9.5);
+set(0,`Carga calculada con los ambientes ingresados: ${total} personas.`,"ok","<b>A.040 Art. 13:</b> SUM 1.0 m²/persona; aulas 1.5; talleres/labs 3.0; bibliotecas 2.0; oficinas 9.5; auditorios por asientos.");
+let rl=rload(),doors=n("roomDoors"),sep=n("doorSep"),diag=n("roomDiag"),k="ver",t=`Aforo del ambiente: ${rl||"no calculable"}. `;
+if(rl>50){t+=`Requiere al menos 2 puertas. Declaradas: ${doors||0}.`;k=doors>=2?"ok":"no";if(diag&&sep){t+=` Separación mínima: ${(diag/3).toFixed(2)} m; declarada ${sep.toFixed(2)} m.`;if(sep<diag/3)k="no"}}else if(rl){t+="No supera 50 personas; no se activa la exigencia de 2 puertas del Art. 16.2.";k="ok"}set(1,t,k,"<b>A.040 Art. 16.2:</b> aforo >50 → al menos 2 puertas del mismo ambiente, distanciadas para permitir rutas alternativas; separación ≥1/3 de la diagonal mayor. <b>Lectura AquaCheck:</b> diagonal mayor = mayor segmento entre vértices opuestos del perímetro interior en planta. Para trazabilidad, la separación declarada se toma entre los puntos más próximos de los vanos; el Art. 16.2 no desarrolla un método gráfico adicional de toma de puntos.");
+let dw=n("doorWidth"),df=v("doorFlow"),dt=`Vano declarado: ${dw||"no ingresado"} m. `;if(dw)dt+=dw>=1?"Cumple mínimo 1.00 m.":"NO cumple mínimo 1.00 m.";if(df==="s")dt+=" Abre en sentido de evacuación.";if(df==="n")dt+=" NO abre en sentido de evacuación.";set(2,dt,(dw&&dw<1)||df==="n"?"no":(dw&&df==="s"?"ok":"ver"),"<b>A.040 Art. 16.1:</b> vano mínimo 1.00 m y apertura en sentido de evacuación.");
+let f=n("floors"),st=n("stairs");set(3,f>1?`Regla general: mínimo 2 escaleras. Declaradas: ${st||0}.`:"Edificación de 1 piso: no activa regla de 2 escaleras.",f>1?(st>=2?"ok":"ver"):"ok","<b>A.040 Art. 18:</b> más de 1 piso → mínimo 2 escaleras, salvo excepción.");
+let tr=n("travel"),spr=v("spr")==="s",lim=spr?60:45,fl=n("floorLoad"),fail=[];if(!(f>0&&f<=3))fail.push("más de 3 pisos o dato faltante");if(!(fl>0&&fl<=100))fail.push("carga por piso >100 o no ingresada");if(v("rescue")!=="s")fail.push("salida de rescate no acreditada");if(n("rescueW")<.60)fail.push("ancho salida <0.60 m");if(n("rescueH")<.90)fail.push("alto salida <0.90 m");if(!n("rescueSill")||n("rescueSill")>1.10)fail.push("borde inferior >1.10 m o no verificado");if(v("rescueOpen")!=="s")fail.push("apertura interior sin herramientas no verificada");if(v("rescueWay")!=="s")fail.push("apertura ≥90°/acceso vía pública no verificada");if(!(tr>0&&tr<=lim))fail.push("recorrido fuera de 45/60 m");
+if(v("safeStair")==="n")fail.push("si el recorrido fue medido solo hasta el ingreso de la escalera, debe recalcularse hasta exterior/área segura");
+set(4,st===1?(fail.length?`UNA SOLA ESCALERA NO ACREDITADA: ${fail.join("; ")}.`:"UNA SOLA ESCALERA POTENCIALMENTE ADMISIBLE con los datos ingresados; verificar expediente completo."):"No se evalúa excepción de una sola escalera.",st===1?(fail.length?"no":"ok"):"ok","<b>A.040 Art. 18:</b> excepción simultánea: ≤3 pisos; ≤100 usuarios/piso; salida directa de rescate operable (mín. 0.60×0.90 m, borde inferior ≤1.10 m); recorrido ≤45 m sin rociadores o ≤60 m con rociadores.");
+let endTxt=v("safeStair")==="s"?"La escalera fue declarada medio seguro protegido: la medición puede finalizar al ingresar a ella, sujeto a verificación del expediente.":v("safeStair")==="n"?"La escalera NO fue acreditada como medio seguro protegido: no finalice la medición en su ingreso; continúe por la ruta hasta el exterior o área segura.":"No se ha verificado si la escalera constituye medio seguro protegido; antes de validar la distancia debe definirse el punto final real.";
+set(5,(tr?`Recorrido ${tr.toFixed(1)} m; límite ${lim} m ${spr?"con":"sin"} rociadores. ${tr<=lim?"Dentro del límite numérico.":"SUPERA el límite."} `:`Falta ingresar recorrido; límite ${lim} m. `)+endTxt,tr?(tr<=lim?(v("safeStair")===""?"ver":"ok"):"no"):"ver","<b>A.040 Art. 18(d):</b> desde la puerta del aula más alejada hasta zona segura: escalera de evacuación, refugio o exterior; 45 m sin rociadores o 60 m con rociadores. <b>Criterio oficial MVCS/A.130:</b> la distancia de recorrido se mide hasta el ingreso a un medio seguro de evacuación protegido contra fuego y humos. Si la escalera no constituye ese medio seguro, el recorrido continúa hasta el exterior o área segura. La falta de presurización por sí sola no permite concluir que la escalera no sea protegida.");
+set(6,"Verificar pasamano adicional continuo entre 0.45 y 0.60 m. Escalera integrada: espacio previo de receso con profundidad igual al ancho mínimo del tramo y no menor a 1.20 m.","ver","<b>A.040 Art. 17.</b>");
+set(7,"REQUERIDO VERIFICAR en planos y campo.","ver","<b>A.040 Art. 7:</b> complementa con A.010 y A.130; ITSE verifica señalización e iluminación de emergencia.");
+set(8,"REQUIERE VERIFICACIÓN ESPECÍFICA según A.130, ITSE y tipo de local educativo.","ver","<b>Criterio Aquaelite:</b> no se aplica un umbral universal no sustentado.");
+set(9,"REQUIERE VERIFICACIÓN ESPECÍFICA del sistema fijo de agua/gabinetes según características y expediente.","ver","<b>A.040 Art. 7:</b> remite a A.130. Formatos ITSE verifican sistemas fijos cuando corresponden.");
+set(10,spr?"El proyecto declara rociadores; verificar diseño, alcance y norma aplicable.":"No se declararon rociadores; esta v1.0 no los marca obligatorios sin supuesto normativo específico.","ver","<b>Precaución:</b> no se usa el proyecto A.130-2026 como norma vigente.");
+let doc=v("service")==="superior"||v("service")==="cetpro"?"Revisar RVM 089-2026-MINEDU además del RNE.":v("private")==="s"?"Revisar RVM 028-2025-MINEDU + RVM 068-2025-MINEDU.":"Revisar RVM 068-2025-MINEDU y la norma específica del servicio.";set(11,doc,"ver","<b>MINEDU:</b> A.040 se complementa con normativa sectorial.");
+let a=[];if(f>1&&st<2)a.push("• Menos de 2 escaleras: revisar excepción completa Art. 18.");if(rl>50&&doors<2)a.push("• Ambiente >50 personas sin 2 puertas.");if(dw&&dw<1)a.push("• Puerta con vano <1.00 m.");if(tr>lim)a.push("• Recorrido supera 45/60 m.");e("summary").innerHTML=`<b>Síntesis AquaCheck</b><br>${a.length?a.join("<br>"):"Sin observaciones automáticas críticas en los criterios calculables."}<br><span class="tiny">Los sistemas PCI quedan en verificación específica hasta identificar el supuesto normativo aplicable.</span>`;
+}
+let pg=e("photoGrid");for(let i=1;i<=4;i++){let d=document.createElement("div");d.className="photo";d.innerHTML=`<label>Evidencia ${i}</label><input class="np" type="file" accept="image/*" onchange="pic(this,'p${i}')"><img id="p${i}"><label>Comentario</label><textarea></textarea>`;pg.appendChild(d)}function pic(x,id){let f=x.files&&x.files[0];if(!f)return;let r=new FileReader();r.onload=q=>{let im=e(id);im.src=q.target.result;im.style.display="block"};r.readAsDataURL(f)}
+</script></main></body></html>
