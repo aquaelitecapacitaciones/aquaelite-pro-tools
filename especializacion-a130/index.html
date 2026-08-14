@@ -5,7 +5,7 @@
 <title>Aquaelite PRO | Acceso Especialización A.130</title>
 <style>
 :root{--navy:#0b2748;--blue:#155a96;--cyan:#39b9d5;--red:#b42318;--bg:#f3f7fb;--line:#d8e2ec;--muted:#607286}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(145deg,#edf4fa,#fff);color:#172b3a}.hero{background:linear-gradient(135deg,#071c34,#0d3a67);color:white;padding:30px 18px}.wrap{max-width:880px;margin:auto}.brand{font-size:13px;font-weight:800;letter-spacing:2px;color:#7ad8ea}.hero h1{margin:9px 0 4px;font-size:34px}.hero p{margin:0;color:#dceaf5}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin:18px auto;box-shadow:0 8px 24px #0b274812}.badge{display:inline-block;background:#e9f5fb;color:var(--blue);padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800}.access{max-width:560px}.field{margin:13px 0}label{display:block;font-size:12px;font-weight:800;color:#40556b;margin-bottom:5px}input{width:100%;padding:12px;border:1px solid #bdcad6;border-radius:9px;font-size:15px}.check{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--muted);line-height:1.45}.check input{width:auto;margin-top:2px}.btn{width:100%;border:0;border-radius:9px;padding:13px;font-weight:900;font-size:15px;cursor:pointer;background:var(--navy);color:#fff;margin-top:13px}.btn:hover{background:var(--blue)}.error{display:none;margin-top:10px;color:var(--red);font-size:12px;font-weight:800}.member{display:none}.tool{border-left:5px solid var(--cyan)}.tool h2{color:var(--navy);margin:9px 0}.steps{background:#f4f8fb;border-radius:10px;padding:13px;font-size:13px;line-height:1.7}.open{display:inline-block;text-decoration:none;background:var(--navy);color:#fff;padding:13px 18px;border-radius:9px;font-weight:900;margin-top:13px}.soon{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.soon div{background:#eef4f8;border-radius:10px;padding:13px;text-align:center;font-weight:800;color:#52687d}.fine{font-size:10.5px;color:#718096;line-height:1.5}.footer{text-align:center;padding:25px;color:#63778a;font-size:11px}@media(max-width:650px){.hero h1{font-size:27px}.soon{grid-template-columns:1fr}.card{margin:13px 12px}}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(145deg,#edf4fa,#fff);color:#172b3a}.hero{background:linear-gradient(135deg,#071c34,#0d3a67);color:white;padding:30px 18px}.wrap{max-width:880px;margin:auto}.brand{font-size:13px;font-weight:800;letter-spacing:2px;color:#7ad8ea}.hero h1{margin:9px 0 4px;font-size:34px}.hero p{margin:0;color:#dceaf5}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin:18px auto;box-shadow:0 8px 24px #0b274812}.badge{display:inline-block;background:#e9f5fb;color:var(--blue);padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800}.access{max-width:560px}.field{margin:13px 0}label{display:block;font-size:12px;font-weight:800;color:#40556b;margin-bottom:5px}input{width:100%;padding:12px;border:1px solid #bdcad6;border-radius:9px;font-size:15px}.check{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--muted);line-height:1.45}.check input{width:auto;margin-top:2px}.btn{width:100%;border:0;border-radius:9px;padding:13px;font-weight:900;font-size:15px;cursor:pointer;background:var(--navy);color:#fff;margin-top:13px}.btn:hover{background:var(--blue)}.btn:disabled{opacity:.7;cursor:wait}.error{display:none;margin-top:10px;color:var(--red);font-size:12px;font-weight:800}.member{display:none}.tool{border-left:5px solid var(--cyan)}.tool h2{color:var(--navy);margin:9px 0}.steps{background:#f4f8fb;border-radius:10px;padding:13px;font-size:13px;line-height:1.7}.open{display:inline-block;text-decoration:none;background:var(--navy);color:#fff;padding:13px 18px;border-radius:9px;font-weight:900;margin-top:13px}.soon{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.soon div{background:#eef4f8;border-radius:10px;padding:13px;text-align:center;font-weight:800;color:#52687d}.fine{font-size:10.5px;color:#718096;line-height:1.5}.footer{text-align:center;padding:25px;color:#63778a;font-size:11px}@media(max-width:650px){.hero h1{font-size:27px}.soon{grid-template-columns:1fr}.card{margin:13px 12px}}
 </style></head>
 <body>
 <header class="hero"><div class="wrap"><div class="brand">AQUAELITE® · AQUAELITE PRO</div><h1>Área de Participantes</h1><p>Especialización Técnica Norma A.130-RNE · 20 y 21 de agosto</p></div></header>
@@ -19,7 +19,7 @@
 <div class="field"><label>WhatsApp</label><input id="phone" inputmode="tel" placeholder="Número de contacto"></div>
 <div class="field"><label>Código de acceso</label><input id="code" type="password" placeholder="Código entregado al grupo"></div>
 <label class="check"><input id="accept" type="checkbox"><span>Confirmo que soy participante registrado. Este acceso es personal y no debo compartir el enlace ni el código con terceros.</span></label>
-<button class="btn" onclick="enter()">INGRESAR</button><div id="err" class="error">Verifica tus datos, acepta la condición de uso e ingresa el código correcto.</div>
+<button id="enterBtn" class="btn" onclick="enter()">INGRESAR</button><div id="err" class="error">Verifica tus datos, acepta la condición de uso e ingresa el código correcto.</div>
 <p class="fine">Esta es una barrera básica de acceso para la etapa piloto. Aquaelite podrá modificar o retirar el código si detecta distribución no autorizada.</p>
 </section>
 
@@ -35,16 +35,31 @@
 <div class="footer">AQUAELITE® · Soluciones Integrales en Agua<br>APRENDE · APLICA · VERIFICA</div>
 <script>
 const ACCESS_CODE='A130-AQUAELITE';
-function enter(){
+const REGISTRATION_URL='https://script.google.com/macros/s/AKfycbxYuXoRWpPSeg0ytx7WXirtcuXzhubFDKX1DJRMFKmZzffH5xVrRJ9RT45-Kz8XR7T2/exec';
+
+async function enter(){
  const name=document.getElementById('name').value.trim();
  const email=document.getElementById('email').value.trim();
  const phone=document.getElementById('phone').value.trim();
  const code=document.getElementById('code').value.trim().toUpperCase();
  const accept=document.getElementById('accept').checked;
  const okEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
- if(!name||!okEmail||phone.length<7||code!==ACCESS_CODE||!accept){document.getElementById('err').style.display='block';return;}
+ const err=document.getElementById('err');
+ const btn=document.getElementById('enterBtn');
+ if(!name||!okEmail||phone.length<7||code!==ACCESS_CODE||!accept){err.style.display='block';return;}
+ err.style.display='none';
+ btn.disabled=true;btn.textContent='REGISTRANDO ACCESO...';
+ try{
+   await fetch(REGISTRATION_URL,{
+     method:'POST',
+     mode:'no-cors',
+     headers:{'Content-Type':'text/plain;charset=utf-8'},
+     body:JSON.stringify({nombre:name,correo:email,whatsapp:phone,herramienta:'AC-RNE-001 | AquaCheck Vivienda',evento:'Especialización Técnica Norma A.130-RNE'})
+   });
+ }catch(e){console.warn('Registro remoto no confirmado',e);}
  sessionStorage.setItem('a130_access','1');sessionStorage.setItem('a130_name',name);
  showMember(name);
+ btn.disabled=false;btn.textContent='INGRESAR';
 }
 function showMember(name){document.getElementById('gate').style.display='none';document.getElementById('member').style.display='block';document.getElementById('welcome').textContent='Bienvenido, '+name;window.scrollTo({top:0,behavior:'smooth'});}
 if(sessionStorage.getItem('a130_access')==='1')showMember(sessionStorage.getItem('a130_name')||'participante');
