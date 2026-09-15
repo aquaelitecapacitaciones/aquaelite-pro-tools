@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AQUAELITE | Cotizador</title>
+<style>
+:root{--navy:#062a57;--blue:#0877bd;--cyan:#1dc6e8;--light:#edf8fc;--ink:#152b3b}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f7fa;color:var(--ink)}
+header{background:linear-gradient(120deg,var(--navy),#064c86);color:white;padding:24px 6%;display:flex;justify-content:space-between;align-items:center}
+.brand{font-size:28px;font-weight:800;letter-spacing:1px}.brand span{color:var(--cyan)} .tag{font-size:13px;opacity:.85}
+main{max-width:1180px;margin:26px auto;padding:0 18px}.card{background:white;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 5px 22px #1232}
+h2{color:var(--navy);margin:0 0 16px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+label{font-size:12px;font-weight:700;color:#496273}input,select,textarea{width:100%;padding:11px;border:1px solid #c9d9e3;border-radius:8px;margin-top:5px}
+.service{display:flex;gap:12px}.service button,.primary{border:0;border-radius:9px;padding:13px 18px;font-weight:700;cursor:pointer}
+.service button{background:#eaf4f8;color:var(--navy)}.service button.active,.primary{background:var(--navy);color:white}
+.internal{border-left:5px solid var(--cyan);background:#edfbfe}.internal h2:after{content:" • NO APARECE EN EL PDF";font-size:10px;color:#47899a}
+table{width:100%;border-collapse:collapse;font-size:13px}th{background:var(--navy);color:white;padding:10px}td{padding:8px;border-bottom:1px solid #e2ebf0}
+td input{margin:0;padding:8px}.money{text-align:right}.summary{margin-left:auto;width:min(430px,100%);margin-top:18px}.summary div{display:flex;justify-content:space-between;padding:8px}.summary .total{font-size:20px;font-weight:800;background:var(--light);color:var(--navy)}
+.actions{display:flex;justify-content:flex-end;gap:10px}.ghost{background:white;border:1px solid var(--navy);color:var(--navy);border-radius:9px;padding:12px 16px;font-weight:700}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.service{flex-direction:column}table{font-size:11px}}
+@media print{header,.no-print,.internal{display:none!important}body{background:white}.card{box-shadow:none}.client-form{display:none}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">AQUA<span>ELITE®</span></div><div class="tag">Soluciones en agua y protección contra incendios</div></div><b>COTIZADOR INTERNO</b></header>
+<main>
+<section class="card no-print"><h2>1. Tipo de cotización</h2><div class="service">
+<button id="bp" class="active" onclick="setType('proyecto')">Proyectos · Inspecciones · Auditorías</button>
+<button id="bm" onclick="setType('mantenimiento')">Mantenimiento detección y alarmas</button></div></section>
+<section class="card client-form"><h2>2. Datos del cliente</h2><div class="grid">
+<div><label>Razón social / Cliente<input id="cliente"></label></div><div><label>RUC / DNI<input id="ruc"></label></div>
+<div><label>Contacto<input id="contacto"></label></div><div><label>Cargo<input id="cargo"></label></div>
+<div><label>Proyecto / sede<input id="sede"></label></div><div><label>Dirección<input id="direccion"></label></div>
+</div></section>
+<section class="card"><h2>3. Partidas</h2><table><thead><tr><th>Partida</th><th>Unidad</th><th>Cant.</th><th>P.U. editable</th><th>Subtotal</th></tr></thead><tbody id="items"></tbody></table>
+<div class="summary"><div><span>Subtotal cotizado</span><b id="subtotal">S/ 0.00</b></div><div><span>IGV 18%</span><b id="igv">S/ 0.00</b></div><div class="total"><span>Total</span><b id="total">S/ 0.00</b></div></div></section>
+<section class="card internal no-print"><h2>4. Condiciones financieras internas</h2><div class="grid">
+<label>Modalidad<select id="pago" onchange="calc()"><option>Crédito</option><option>Contado</option><option>Factoring</option></select></label>
+<label>Días estimados de cobro<input id="dias" type="number" value="30" onchange="calc()"></label>
+<label>Costo financiero interno %<input id="fin" type="number" value="10" step=".1" onchange="calc()"></label>
+<label>Contingencia / riesgo %<input id="riesgo" type="number" value="0" step=".1" onchange="calc()"></label>
+<label>Factoring acordado<select id="factoring"><option>No</option><option>Sí</option></select></label>
+<label>Mostrar cláusula de mora<select id="mora"><option>Sí</option><option>No</option></select></label>
+</div><p>El costo financiero y la contingencia se incorporan proporcionalmente en los precios mostrados al cliente.</p></section>
+<section class="card no-print"><div class="actions"><button class="ghost" onclick="window.print()">Vista previa / Imprimir</button><button class="primary" onclick="window.print()">GENERAR PDF</button></div></section>
+</main>
+<script>
+const data={
+proyecto:[
+["Supervisor técnico junior","día",400],["Prevencionista","día",250],["Ing. especialista con proyecto activo","día",300],
+["Ing. especialista sin proyecto activo","día",450],["Ingeniero sanitario senior","día",1000],["Técnico supervisor calificado","día",300],
+["Dibujante / redactor técnico","día",150],["Elaboración de planos sanitarios","m²",3],["Memoria de cálculos","m²",.8],
+["Memoria descriptiva","global",600],["Documentos / SCTR","persona",180],["Cámara inspección / fotos","visita",80],["Transporte / refrigerio","día",250]],
+mantenimiento:[
+["Mantenimiento preventivo de alarmas","punto",52],["Instalación / reposición de punto de detección","und",180],
+["Inspección de tablero bidireccional","und",500],["Transporte / refrigerio","día",250]]
+};
+let type="proyecto";
+function setType(t){type=t;bp.classList.toggle("active",t==="proyecto");bm.classList.toggle("active",t==="mantenimiento");render()}
+function render(){items.innerHTML=data[type].map((x,i)=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td><input class="qty" type="number" min="0" value="0" oninput="calc()"></td><td><input class="pu" type="number" min="0" step=".01" value="'+x[2]+'" oninput="calc()"></td><td class="money line">S/ 0.00</td></tr>').join("");calc()}
+function calc(){let base=0;const q=[...document.querySelectorAll(".qty")],p=[...document.querySelectorAll(".pu")],l=[...document.querySelectorAll(".line")];
+let carga=(pago.value==="Contado"?0:(+fin.value||0))+(+riesgo.value||0);q.forEach((e,i)=>{let v=(+e.value||0)*(+p[i].value||0)*(1+carga/100);l[i].textContent="S/ "+v.toFixed(2);base+=v});
+subtotal.textContent="S/ "+base.toFixed(2);igv.textContent="S/ "+(base*.18).toFixed(2);total.textContent="S/ "+(base*1.18).toFixed(2)}
+render();
+</script></body></html>
