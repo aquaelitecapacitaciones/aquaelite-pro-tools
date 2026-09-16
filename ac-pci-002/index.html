@@ -438,20 +438,22 @@ agregarCuatroFotos();
 function ordenarPuntos(pts){ return [...pts].sort((a,b)=>a.q-b.q); }
 function valorEnCurva(pts, qObjetivo){
   const p=ordenarPuntos(pts);
-  if(p.length<2) return null;
-  for(let i=0;i<p.length-1;i++){
-    if(qObjetivo>=p[i].q && qObjetivo<=p[i+1].q){
-      const f=(qObjetivo-p[i].q)/(p[i+1].q-p[i].q);
-      return {p:p[i].p+f*(p[i+1].p-p[i].p), modo:"INTERPOLACIÓN", a:p[i], b:p[i+1]};
-    }
-  }
-  // Extrapolate using nearest end segment, but label it clearly.
-  if(qObjetivo<p[0].q){
-    const a=p[0],b=p[1],f=(qObjetivo-a.q)/(b.q-a.q);
-    return {p:a.p+f*(b.p-a.p), modo:"EXTRAPOLACIÓN", a,b};
-  }
-  const a=p[p.length-2],b=p[p.length-1],f=(qObjetivo-a.q)/(b.q-a.q);
-  return {p:a.p+f*(b.p-a.p), modo:"EXTRAPOLACIÓN", a,b};
+  if(p.length<3) return null;
+
+  // AquaCheck usa los 3 puntos de campo normalizados por RPM para construir
+  // una única curva cuadrática P(Q)=a+bQ+cQ². La misma curva se evalúa tanto
+  // dentro como fuera del rango medido, evitando prolongaciones lineales de 2 puntos.
+  const fit=quadraticFit(p.slice(0,3));
+  if(!fit) return null;
+
+  const qMin=p[0].q, qMax=p[2].q;
+  const dentro=qObjetivo>=qMin && qObjetivo<=qMax;
+  return {
+    p:fit.p(qObjetivo),
+    modo:dentro ? "CURVA AJUSTADA (3 PUNTOS)" : "EXTRAPOLACIÓN (3 PUNTOS)",
+    fit,
+    puntos:p.slice(0,3)
+  };
 }
 
 function evaluar(){
@@ -546,7 +548,7 @@ document.getElementById("sumQ150").textContent=(1.5*qr).toFixed(1);
       estadoFinal.style.color = cumpleNFPA20_150 ? "#184f83" : "#b42318";
    }
 
-   let detalle=`La curva se construyó con ${validPoints} puntos válidos de campo normalizados por RPM. `;
+   let detalle=`La curva se construyó con los 3 puntos de campo normalizados por RPM (Q corregido = Q medido × Nr/RPM; presión neta corregida = (Pdescarga − Psucción) × (Nr/RPM)²) y se ajustó mediante una curva cuadrática única. `;
    if(r100){
       detalle+=`Para el caudal nominal Qr = ${qr.toFixed(1)} gpm, AquaCheck obtuvo una presión neta de ${r100.p.toFixed(1)} psi mediante ${r100.modo.toLowerCase()}. `;
       detalle+=`El 95 % de la presión nominal de placa Pr = ${pr.toFixed(1)} psi es ${p95ref.toFixed(1)} psi. `;
