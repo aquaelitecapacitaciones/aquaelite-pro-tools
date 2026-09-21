@@ -23,6 +23,28 @@
 @media(max-width:900px){.workflow-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.flow-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.workflow-grid,.flow-fields{grid-template-columns:1fr}table{min-width:1320px}}
 @media print{.workflow-card{display:none!important}}
+
+/* Mobile field cards R02: conserva tabla en escritorio y evita scroll horizontal en campo */
+@media screen and (max-width:760px){
+  .tablewrap{overflow:visible}
+  .tablewrap table{min-width:0;width:100%;display:block}
+  .tablewrap thead{display:none}
+  .tablewrap tbody{display:block;width:100%}
+  .tablewrap tr{display:block;width:100%;margin:0 0 12px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 1px 4px #0f172a0a}
+  .tablewrap td{display:block;width:100%;border:0;border-bottom:1px solid #e7edf4;padding:8px 6px;min-width:0}
+  .tablewrap td:last-child{border-bottom:0}
+  .tablewrap td::before{display:block;margin-bottom:4px;font-size:10px;font-weight:900;letter-spacing:.02em;color:var(--muted);text-transform:uppercase}
+  .tablewrap td:nth-child(1)::before{content:"Código"}
+  .tablewrap td:nth-child(2)::before{content:"Ubicación / componente"}
+  .tablewrap td:nth-child(3)::before{content:"Criterio"}
+  .tablewrap td:nth-child(4)::before{content:"Fuente"}
+  .tablewrap td:nth-child(5)::before{content:"Criticidad"}
+  .tablewrap td:nth-child(6)::before{content:"Resultado"}
+  .tablewrap td:nth-child(7)::before{content:"Observación"}
+  .tablewrap td:nth-child(8)::before{content:"Evidencia / protocolo"}
+  .tablewrap td select,.tablewrap td textarea,.tablewrap td input{min-width:0;width:100%;font-size:14px}
+  .tablewrap td textarea{min-height:76px}
+}
 </style>
 </head>
 <body>
